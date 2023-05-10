@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="settings_activity_tv">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/tv_black</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginEnd">44dp</item>
+        <item name="android:paddingVertical">21dp</item>
+    </style>
+</resources>
