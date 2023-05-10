@@ -4,19 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_blue"
     android:orientation="vertical"
-    android:paddingTop="14dp"
     android:paddingHorizontal="@dimen/padding_start_end"
+    android:paddingTop="14dp"
     android:paddingBottom="28dp">
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/ys_display_medium"
         android:text="@string/header"
-        android:textColor="@color/white"
-        android:textSize="22sp" />
+        android:textColor="@color/simple_white"
+        android:textFontWeight="500"
+        android:textSize="22sp"
+        tools:targetApi="p" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,37 +29,32 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/search_btn"
+            style="@style/MainActivityBtn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            style="@style/main_activity_btn"
             android:layout_weight="1"
             android:text="@string/search_btn"
-            app:icon="@drawable/ic_search"
-            />
+            app:icon="@drawable/ic_search" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/albums_btn"
+            style="@style/MainActivityBtn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            style="@style/main_activity_btn"
-            android:layout_weight="1"
             android:layout_marginVertical="16dp"
+            android:layout_weight="1"
             android:text="@string/albums_btn"
-            app:icon="@drawable/ic_albums"
-            />
+            app:icon="@drawable/ic_albums" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/settings_btn"
+            style="@style/MainActivityBtn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            style="@style/main_activity_btn"
             android:layout_weight="1"
             android:text="@string/settings_btn"
-            app:icon="@drawable/ic_settings"
-            />
-
+            app:icon="@drawable/ic_settings" />
 
     </LinearLayout>
-
 
 </LinearLayout>
