@@ -9,16 +9,13 @@
     android:paddingTop="14dp"
     android:paddingBottom="28dp">
 
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/ys_display_medium"
         android:text="@string/header"
         android:textColor="@color/simple_white"
-        android:textFontWeight="500"
-        android:textSize="22sp"
-        tools:targetApi="p" />
+        android:textSize="22sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

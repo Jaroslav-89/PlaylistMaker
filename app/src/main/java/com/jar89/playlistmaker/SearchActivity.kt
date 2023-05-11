@@ -14,7 +14,9 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
     }
-private lateinit var inputEditText: EditText
+
+    private lateinit var inputEditText: EditText
+    private lateinit var searchText: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -30,6 +32,7 @@ private lateinit var inputEditText: EditText
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearBtn.visibility = clearButtonVisibility(s)
+                searchText = inputEditText.text.toString()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -60,11 +63,11 @@ private lateinit var inputEditText: EditText
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, inputEditText.text.toString())
+        outState.putString(SEARCH_TEXT, searchText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        inputEditText.setText(savedInstanceState.getString(SEARCH_TEXT,""))
+        inputEditText.setText(savedInstanceState.getString(SEARCH_TEXT, ""))
     }
 }

@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingHorizontal="16dp"
-    android:paddingTop="14dp">
+    android:paddingTop="14dp"
+    android:background="?attr/colorPrimary">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,9 +31,7 @@
             android:fontFamily="@font/ys_display_medium"
             android:text="@string/settings_tv"
             android:textColor="?attr/colorOnPrimary"
-            android:textFontWeight="500"
-            android:textSize="22sp"
-            tools:targetApi="p" />
+            android:textSize="22sp" />
 
     </LinearLayout>
 
@@ -53,8 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
             app:thumbTint="?attr/thumbTint"
-            app:trackTint="?attr/trackTint"
-            />
+            app:trackTint="?attr/trackTint" />
 
     </FrameLayout>
 

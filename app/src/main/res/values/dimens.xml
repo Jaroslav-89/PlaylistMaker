@@ -2,4 +2,6 @@
 <resources>
     <dimen name="corner_radius">16dp</dimen>
     <dimen name="padding_start_end">16dp</dimen>
+    <dimen name="margin_start_end">16dp</dimen>
+    <dimen name="margin_back_btn_activity_search">20dp</dimen>
 </resources>

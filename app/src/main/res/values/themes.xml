@@ -12,7 +12,6 @@
                 <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
-        <item name="android:background">?attr/colorPrimary</item>
         <item name="colorOnSecondaryContainer">@color/ic_gray</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="trackTint">@color/track_light</item>
