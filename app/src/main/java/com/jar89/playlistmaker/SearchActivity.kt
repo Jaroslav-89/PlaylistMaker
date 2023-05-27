@@ -9,6 +9,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
+import com.jar89.playlistmaker.adapters.TracksAdapter
+import com.jar89.playlistmaker.model.trackList
 
 class SearchActivity : AppCompatActivity() {
     companion object {
@@ -21,9 +24,12 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val backBtn = findViewById<ImageView>(R.id.back)
-        inputEditText = findViewById(R.id.search_et)
-        val clearBtn = findViewById<ImageView>(R.id.clear_text_iv)
+        val backBtn = findViewById<ImageView>(R.id.backIv)
+        inputEditText = findViewById(R.id.searchEt)
+        val clearBtn = findViewById<ImageView>(R.id.clearTextIv)
+        val trackRv = findViewById<RecyclerView>(R.id.trackRv)
+        val trackAdapter = TracksAdapter(trackList)
+        trackRv.adapter = trackAdapter
 
         val textWatcher = object : TextWatcher {
 
@@ -60,6 +66,8 @@ class SearchActivity : AppCompatActivity() {
             View.VISIBLE
         }
     }
+
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

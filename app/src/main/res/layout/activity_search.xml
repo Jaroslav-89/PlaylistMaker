@@ -8,7 +8,7 @@
     android:background="?attr/colorPrimary">
 
     <ImageView
-        android:id="@+id/back"
+        android:id="@+id/backIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_back_btn_activity_search"
@@ -19,7 +19,7 @@
         app:tint="?attr/colorOnPrimary" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/headingTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
@@ -28,11 +28,11 @@
         android:text="@string/header_search_activity"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="22sp"
-        app:layout_constraintStart_toEndOf="@+id/back"
+        app:layout_constraintStart_toEndOf="@+id/backIv"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
-        android:id="@+id/search"
+        android:id="@+id/searchFl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_start_end"
@@ -40,10 +40,10 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/headingTv">
 
         <EditText
-            android:id="@+id/search_et"
+            android:id="@+id/searchEt"
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:background="@drawable/search_background_search_screen"
@@ -62,7 +62,7 @@
             android:textSize="16sp" />
 
         <ImageView
-            android:id="@+id/clear_text_iv"
+            android:id="@+id/clearTextIv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
@@ -73,5 +73,17 @@
             app:tint="?attr/hintTextColor" />
 
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trackRv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchFl" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
