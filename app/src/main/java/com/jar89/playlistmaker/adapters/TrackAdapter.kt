@@ -24,9 +24,7 @@ class TracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<Trac
         holder.bind(tracks[position])
     }
 
-    override fun getItemCount(): Int {
-        return tracks.size
-    }
+    override fun getItemCount() = tracks.size
 }
 
 class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,7 +40,7 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .centerInside()
-            .transform(RoundedCorners(dpToPx(2f, itemView.context)))
+            .transform(RoundedCorners(2f.toPx(itemView.context)))
             .placeholder(R.drawable.ic_place_holder_search_screen)
             .into(albumImg)
     }
@@ -52,6 +50,14 @@ fun dpToPx(dp: Float, context: Context): Int {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         dp,
+        context.resources.displayMetrics
+    ).toInt()
+}
+
+fun Float.toPx(context: Context): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this,
         context.resources.displayMetrics
     ).toInt()
 }

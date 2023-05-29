@@ -18,16 +18,20 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
     }
 
+    private lateinit var backBtn: ImageView
     private lateinit var inputEditText: EditText
+    private lateinit var clearBtn: ImageView
+    private lateinit var trackRv: RecyclerView
     private lateinit var searchText: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val backBtn = findViewById<ImageView>(R.id.backIv)
+        backBtn = findViewById<ImageView>(R.id.backIv)
         inputEditText = findViewById(R.id.searchEt)
-        val clearBtn = findViewById<ImageView>(R.id.clearTextIv)
-        val trackRv = findViewById<RecyclerView>(R.id.trackRv)
+        clearBtn = findViewById<ImageView>(R.id.clearTextIv)
+        trackRv = findViewById<RecyclerView>(R.id.trackRv)
         val trackAdapter = TracksAdapter(trackList)
         trackRv.adapter = trackAdapter
 
