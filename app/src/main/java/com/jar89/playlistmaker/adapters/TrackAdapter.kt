@@ -12,8 +12,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.model.Track
+import java.text.SimpleDateFormat
+import java.util.*
 
-class TracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<TracksViewHolder>() {
+class TracksAdapter() : RecyclerView.Adapter<TracksViewHolder>() {
+
+    var tracks = ArrayList<Track>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.track_view_item, parent, false)
@@ -36,7 +41,7 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(track: Track) {
         trackName.text = track.trackName
         artistName.text = track.artistName
-        trackTime.text = track.trackTime
+        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis).toString()
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .centerInside()
@@ -44,14 +49,6 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .placeholder(R.drawable.ic_place_holder_search_screen)
             .into(albumImg)
     }
-}
-
-fun dpToPx(dp: Float, context: Context): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp,
-        context.resources.displayMetrics
-    ).toInt()
 }
 
 fun Float.toPx(context: Context): Int {
