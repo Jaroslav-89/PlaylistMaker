@@ -13,10 +13,10 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val shareBtn = findViewById<FrameLayout>(R.id.settingsShareBtn)
-        val supportBtn = findViewById<FrameLayout>(R.id.settingsSupportBtn)
-        val userAgreementBtn = findViewById<FrameLayout>(R.id.settingsUserAgreementBtn)
-        val backBtn = findViewById<ImageView>(R.id.settingsBackBtn)
+        val shareBtn = findViewById<FrameLayout>(R.id.settings_share_btn)
+        val supportBtn = findViewById<FrameLayout>(R.id.settings_support_btn)
+        val userAgreementBtn = findViewById<FrameLayout>(R.id.settings_user_agreement_btn)
+        val backBtn = findViewById<ImageView>(R.id.settings_back_btn)
 
         shareBtn.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
