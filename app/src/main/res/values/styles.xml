@@ -56,11 +56,11 @@
         <item name="android:letterSpacing">0</item>
     </style>
 
-    <style name="SearchActivityRefreshButton">
-        <item name="android:text">@string/refresh_button_search_activity</item>
+    <style name="SearchActivityRefreshAndClearButton">
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:backgroundTint">?attr/colorOnPrimary</item>
         <item name="cornerRadius">54dp</item>

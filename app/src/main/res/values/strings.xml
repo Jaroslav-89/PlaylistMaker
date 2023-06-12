@@ -14,6 +14,8 @@
     <string name="refresh_button_search_activity">Обновить</string>
     <string name="place_holder_text_search_fail">Ничего не нашлось</string>
     <string name="place_holder_text_internet_throwable">Проблемы со связью\n\nЗагрузка не удалась. Проверьте\nподключение к интернету</string>
+    <string name="place_holder_text_search_history">Вы искали</string>
+    <string name="clear_search_history_button_search_activity">Очистить историю</string>
     <!--    settings activity-->
     <string name="settings_tv">Настройки</string>
     <string name="night_tv">Темная тема</string>

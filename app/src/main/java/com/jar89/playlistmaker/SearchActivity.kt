@@ -1,20 +1,19 @@
 package com.jar89.playlistmaker
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
+import com.jar89.playlistmaker.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.adapters.TracksAdapter
 import com.jar89.playlistmaker.api.ITunesApi
 import com.jar89.playlistmaker.api.TracksResponse
@@ -25,18 +24,20 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class SearchActivity : Activity() {
+const val SEARCH_HISTORY_TRACKS = "search_history_tracks"
+
+class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
     }
 
-    private val itunesBaseUrl = "https://itunes.apple.com"
+    lateinit var sharedPrefs: SharedPreferences
 
+    private val itunesBaseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder()
         .baseUrl(itunesBaseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
     private val itunesService = retrofit.create(ITunesApi::class.java)
 
     private lateinit var backBtn: ImageView
@@ -46,26 +47,40 @@ class SearchActivity : Activity() {
     private lateinit var searchText: String
     private lateinit var placeHolderImage: ImageView
     private lateinit var placeHolderText: TextView
-    private lateinit var refreshButton: Button
+    private lateinit var refreshBtn: Button
+    private lateinit var searchHistoryGroup: NestedScrollView
+    private lateinit var searchHistoryRv: RecyclerView
+    private lateinit var clearSearchHistoryBtn: Button
+    private lateinit var searchHistory: SearchHistory
+    private lateinit var searchedTracks: List<Track>
 
-    private val tracks = ArrayList<Track>()
-    private val trackAdapter = TracksAdapter()
+    private var tracks = ArrayList<Track>()
+    private val trackAdapter = TracksAdapter(this)
+    private val searchHistoryAdapter = SearchHistoryAdapter()
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        sharedPrefs = getSharedPreferences(SEARCH_HISTORY_TRACKS, MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPrefs)
         backBtn = findViewById(R.id.backIv)
         inputEditText = findViewById(R.id.searchEt)
         clearBtn = findViewById(R.id.clearTextIv)
         trackRv = findViewById(R.id.trackRv)
         placeHolderText = findViewById(R.id.placeHolderText)
         placeHolderImage = findViewById(R.id.placeHolderImage)
-        refreshButton = findViewById(R.id.placeHolderRefreshButton)
+        refreshBtn = findViewById(R.id.placeHolderRefreshButton)
+        searchHistoryGroup = findViewById(R.id.searchHistoryGroup)
+        searchHistoryRv = findViewById(R.id.searchHistoryRv)
+        clearSearchHistoryBtn = findViewById(R.id.searchHistoryClearButton)
         trackRv.adapter = trackAdapter
-
+        searchText = ""
         trackAdapter.tracks = tracks
+        searchHistoryRv.adapter = searchHistoryAdapter
+        searchedTracks = searchHistory.getSavedHistoryTracks()
+        searchHistoryAdapter.searchHistoryTracks = searchedTracks
+        sharedPrefs = getSharedPreferences(SEARCH_HISTORY_TRACKS, MODE_PRIVATE)
 
         val textWatcher = object : TextWatcher {
 
@@ -75,6 +90,8 @@ class SearchActivity : Activity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearBtn.visibility = clearButtonVisibility(s)
                 searchText = inputEditText.text.toString()
+                searchHistoryGroup.visibility =
+                    if (inputEditText.hasFocus() && s?.isEmpty() == true && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -82,6 +99,11 @@ class SearchActivity : Activity() {
         }
 
         inputEditText.addTextChangedListener(textWatcher)
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            searchHistoryGroup.visibility =
+                if (hasFocus && inputEditText.text.isEmpty() && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
 
         clearBtn.setOnClickListener {
             inputEditText.setText("")
@@ -90,6 +112,7 @@ class SearchActivity : Activity() {
             inputEditText.clearFocus()
             tracks.clear()
             trackAdapter.notifyDataSetChanged()
+            rvAndPlaceHolderGone()
         }
 
         backBtn.setOnClickListener {
@@ -99,21 +122,22 @@ class SearchActivity : Activity() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchTracks()
-                true
             }
             false
         }
 
-        refreshButton.setOnClickListener {
+        refreshBtn.setOnClickListener {
             searchTracks()
+        }
+
+        clearSearchHistoryBtn.setOnClickListener {
+            searchHistory.clearHistory()
+            searchHistoryGroup.visibility = View.GONE
         }
     }
 
     private fun searchTracks() {
-        placeHolderImage.visibility = View.INVISIBLE
-        placeHolderText.visibility = View.INVISIBLE
-        refreshButton.visibility = View.INVISIBLE
-        trackRv.visibility = View.INVISIBLE
+        rvAndPlaceHolderGone()
         itunesService.searchTrack(inputEditText.text.toString())
             .enqueue(object : Callback<TracksResponse> {
                 @SuppressLint("NotifyDataSetChanged")
@@ -124,34 +148,49 @@ class SearchActivity : Activity() {
                     if (response.code() == 200) {
                         tracks.clear()
                         if (response.body()?.results?.isNotEmpty() == true) {
-                            tracks.addAll(response.body()?.results!!)
-                            trackAdapter.notifyDataSetChanged()
-                            trackRv.visibility = View.VISIBLE
+                            showTracksList(response)
                         }
                         if (tracks.isEmpty()) {
-                            placeHolderImage.setImageResource(R.drawable.img_search_fail)
-                            placeHolderText.text = (getString(R.string.place_holder_text_search_fail))
-                            placeHolderImage.visibility = View.VISIBLE
-                            placeHolderText.visibility = View.VISIBLE
+                            showSearchFail()
                         }
                     } else {
-                        placeHolderImage.setImageResource(R.drawable.img_internet_throwable)
-                        placeHolderText.text = (getString(R.string.place_holder_text_internet_throwable))
-                        placeHolderImage.visibility = View.VISIBLE
-                        placeHolderText.visibility = View.VISIBLE
-                        refreshButton.visibility = View.VISIBLE
+                        showInternetThrowable()
                     }
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    placeHolderImage.setImageResource(R.drawable.img_internet_throwable)
-                    placeHolderText.text = (getString(R.string.place_holder_text_internet_throwable))
-                    placeHolderImage.visibility = View.VISIBLE
-                    placeHolderText.visibility = View.VISIBLE
-                    refreshButton.visibility = View.VISIBLE
+                    showInternetThrowable()
                 }
-
             })
+    }
+
+    private fun rvAndPlaceHolderGone() {
+        placeHolderImage.visibility = View.GONE
+        placeHolderText.visibility = View.GONE
+        refreshBtn.visibility = View.GONE
+        trackRv.visibility = View.GONE
+    }
+
+    private fun showTracksList(response: Response<TracksResponse>) {
+        tracks.addAll(response.body()?.results!!)
+        trackAdapter.notifyDataSetChanged()
+        trackRv.visibility = View.VISIBLE
+        trackRv.scrollToPosition(0)
+    }
+
+    private fun showSearchFail() {
+        placeHolderImage.setImageResource(R.drawable.img_search_fail)
+        placeHolderText.text = (getString(R.string.place_holder_text_search_fail))
+        placeHolderImage.visibility = View.VISIBLE
+        placeHolderText.visibility = View.VISIBLE
+    }
+
+    private fun showInternetThrowable() {
+        placeHolderImage.setImageResource(R.drawable.img_internet_throwable)
+        placeHolderText.text = (getString(R.string.place_holder_text_internet_throwable))
+        placeHolderImage.visibility = View.VISIBLE
+        placeHolderText.visibility = View.VISIBLE
+        refreshBtn.visibility = View.VISIBLE
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -160,6 +199,10 @@ class SearchActivity : Activity() {
         } else {
             View.VISIBLE
         }
+    }
+
+    override fun onTrackClick(track: Track) {
+        searchHistory.addTrackInHistory(track)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
