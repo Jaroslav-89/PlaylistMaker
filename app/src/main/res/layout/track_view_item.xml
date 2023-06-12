@@ -37,13 +37,12 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
-            android:weightSum="1">
+            android:layout_marginTop="1dp">
 
             <TextView
                 android:id="@+id/artistNameTv"
                 style="@style/SearchActivityTrackArtistAndTime"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 tools:text="The Beatles" />
@@ -51,6 +50,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0"
                 android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="5dp"
                 android:src="@drawable/ic_ellipse_search_screen"
@@ -61,6 +61,7 @@
                 style="@style/SearchActivityTrackArtistAndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0"
                 tools:text="2:55" />
 
         </LinearLayout>
