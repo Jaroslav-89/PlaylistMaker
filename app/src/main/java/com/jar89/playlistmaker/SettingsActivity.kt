@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -18,13 +17,6 @@ class SettingsActivity : AppCompatActivity() {
         val supportBtn = findViewById<FrameLayout>(R.id.settingsSupportBtn)
         val userAgreementBtn = findViewById<FrameLayout>(R.id.settingsUserAgreementBtn)
         val backBtn = findViewById<ImageView>(R.id.settingsBackBtn)
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-
-        themeSwitcher.isChecked = (applicationContext as App).darkTheme
-
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
-        }
 
         shareBtn.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
