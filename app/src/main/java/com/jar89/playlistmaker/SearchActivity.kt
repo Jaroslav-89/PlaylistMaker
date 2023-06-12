@@ -41,6 +41,11 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.addTextChangedListener(textWatcher)
 
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            searchHistoryGroup.visibility =
+                if (hasFocus && inputEditText.text.isEmpty() && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
         clearBtn.setOnClickListener {
             inputEditText.setText("")
             val keyboard = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
