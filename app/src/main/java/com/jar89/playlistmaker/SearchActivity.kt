@@ -104,7 +104,6 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
                 if (hasFocus && inputEditText.text.isEmpty() && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
         }
 
-
         clearBtn.setOnClickListener {
             inputEditText.setText("")
             val keyboard = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
