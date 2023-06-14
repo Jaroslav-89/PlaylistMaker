@@ -25,7 +25,7 @@
         android:weightSum="3">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/searchBtn"
+            android:id="@+id/search_btn"
             style="@style/MainActivityBtn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -34,7 +34,7 @@
             app:icon="@drawable/ic_search" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/albumsBtn"
+            android:id="@+id/albums_btn"
             style="@style/MainActivityBtn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -44,7 +44,7 @@
             app:icon="@drawable/ic_albums" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/settingsBtn"
+            android:id="@+id/settings_btn"
             style="@style/MainActivityBtn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
