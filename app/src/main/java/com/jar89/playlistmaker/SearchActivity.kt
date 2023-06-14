@@ -51,7 +51,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     private lateinit var searchHistoryGroup: NestedScrollView
     private lateinit var searchHistoryRv: RecyclerView
     private lateinit var clearSearchHistoryBtn: Button
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var searchHistoryObj: SearchHistory
     private lateinit var searchedTracks: List<Track>
 
     private var tracks = ArrayList<Track>()
@@ -62,25 +62,16 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        initView()
+
         sharedPrefs = getSharedPreferences(SEARCH_HISTORY_TRACKS, MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPrefs)
-        backBtn = findViewById(R.id.backIv)
-        inputEditText = findViewById(R.id.searchEt)
-        clearBtn = findViewById(R.id.clearTextIv)
-        trackRv = findViewById(R.id.trackRv)
-        placeHolderText = findViewById(R.id.placeHolderText)
-        placeHolderImage = findViewById(R.id.placeHolderImage)
-        refreshBtn = findViewById(R.id.placeHolderRefreshButton)
-        searchHistoryGroup = findViewById(R.id.searchHistoryGroup)
-        searchHistoryRv = findViewById(R.id.searchHistoryRv)
-        clearSearchHistoryBtn = findViewById(R.id.searchHistoryClearButton)
+        searchHistoryObj = SearchHistory(sharedPrefs)
         trackRv.adapter = trackAdapter
-        searchText = ""
         trackAdapter.tracks = tracks
         searchHistoryRv.adapter = searchHistoryAdapter
-        searchedTracks = searchHistory.getSavedHistoryTracks()
+        searchedTracks = searchHistoryObj.getSavedHistoryTracks()
         searchHistoryAdapter.searchHistoryTracks = searchedTracks
-        sharedPrefs = getSharedPreferences(SEARCH_HISTORY_TRACKS, MODE_PRIVATE)
+        searchText = ""
 
         val textWatcher = object : TextWatcher {
 
@@ -131,7 +122,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         }
 
         clearSearchHistoryBtn.setOnClickListener {
-            searchHistory.clearHistory()
+            searchHistoryObj.clearHistory()
             searchHistoryGroup.visibility = View.GONE
         }
     }
@@ -164,6 +155,19 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
             })
     }
 
+    private fun initView(){
+        backBtn = findViewById(R.id.backIv)
+        inputEditText = findViewById(R.id.searchEt)
+        clearBtn = findViewById(R.id.clearTextIv)
+        trackRv = findViewById(R.id.trackRv)
+        placeHolderText = findViewById(R.id.placeHolderText)
+        placeHolderImage = findViewById(R.id.placeHolderImage)
+        refreshBtn = findViewById(R.id.placeHolderRefreshButton)
+        searchHistoryGroup = findViewById(R.id.searchHistoryGroup)
+        searchHistoryRv = findViewById(R.id.searchHistoryRv)
+        clearSearchHistoryBtn = findViewById(R.id.searchHistoryClearButton)
+    }
+
     private fun rvAndPlaceHolderGone() {
         placeHolderImage.visibility = View.GONE
         placeHolderText.visibility = View.GONE
@@ -179,17 +183,25 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     }
 
     private fun showSearchFail() {
-        placeHolderImage.setImageResource(R.drawable.img_search_fail)
-        placeHolderText.text = (getString(R.string.place_holder_text_search_fail))
-        placeHolderImage.visibility = View.VISIBLE
-        placeHolderText.visibility = View.VISIBLE
+        placeHolderImage.apply {
+            setImageResource(R.drawable.img_search_fail)
+            visibility = View.VISIBLE
+        }
+        placeHolderText.apply {
+            text = (getString(R.string.place_holder_text_search_fail))
+            visibility = View.VISIBLE
+        }
     }
 
     private fun showInternetThrowable() {
-        placeHolderImage.setImageResource(R.drawable.img_internet_throwable)
-        placeHolderText.text = (getString(R.string.place_holder_text_internet_throwable))
-        placeHolderImage.visibility = View.VISIBLE
-        placeHolderText.visibility = View.VISIBLE
+        placeHolderImage.apply {
+            setImageResource(R.drawable.img_internet_throwable)
+            visibility = View.VISIBLE
+        }
+        placeHolderText.apply {
+            text = (getString(R.string.place_holder_text_internet_throwable))
+            visibility = View.VISIBLE
+        }
         refreshBtn.visibility = View.VISIBLE
     }
 
@@ -202,7 +214,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     }
 
     override fun onTrackClick(track: Track) {
-        searchHistory.addTrackInHistory(track)
+        searchHistoryObj.addTrackInHistory(track)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
