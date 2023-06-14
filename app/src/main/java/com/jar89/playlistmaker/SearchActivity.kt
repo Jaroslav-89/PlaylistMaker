@@ -9,7 +9,10 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +34,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         const val SEARCH_TEXT = "SEARCH_TEXT"
     }
 
-    lateinit var sharedPrefs: SharedPreferences
+    private lateinit var sharedPrefs: SharedPreferences
 
     private val itunesBaseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder()
@@ -44,7 +47,6 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     private lateinit var inputEditText: EditText
     private lateinit var clearBtn: ImageView
     private lateinit var trackRv: RecyclerView
-    private lateinit var searchText: String
     private lateinit var placeHolderImage: ImageView
     private lateinit var placeHolderText: TextView
     private lateinit var refreshBtn: Button
@@ -57,6 +59,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     private var tracks = ArrayList<Track>()
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter()
+    private var searchText = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,17 +67,48 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
         initView()
 
+        getHistoryFromsharedPrefs()
+
+        setTrackAdapter()
+
+        setSearchHistoryAdapter()
+
+        setTextAndFocusChangedListener()
+
+        setClickListeners()
+    }
+
+    private fun initView() {
+        backBtn = findViewById(R.id.backIv)
+        inputEditText = findViewById(R.id.searchEt)
+        clearBtn = findViewById(R.id.clearTextIv)
+        trackRv = findViewById(R.id.trackRv)
+        placeHolderText = findViewById(R.id.placeHolderText)
+        placeHolderImage = findViewById(R.id.placeHolderImage)
+        refreshBtn = findViewById(R.id.placeHolderRefreshButton)
+        searchHistoryGroup = findViewById(R.id.searchHistoryGroup)
+        searchHistoryRv = findViewById(R.id.searchHistoryRv)
+        clearSearchHistoryBtn = findViewById(R.id.searchHistoryClearButton)
+    }
+
+    private fun getHistoryFromsharedPrefs() {
         sharedPrefs = getSharedPreferences(SEARCH_HISTORY_TRACKS, MODE_PRIVATE)
         searchHistoryObj = SearchHistory(sharedPrefs)
+        searchedTracks = searchHistoryObj.getSavedHistoryTracks()
+    }
+
+    private fun setTrackAdapter() {
         trackRv.adapter = trackAdapter
         trackAdapter.tracks = tracks
+    }
+
+    private fun setSearchHistoryAdapter() {
         searchHistoryRv.adapter = searchHistoryAdapter
-        searchedTracks = searchHistoryObj.getSavedHistoryTracks()
         searchHistoryAdapter.searchHistoryTracks = searchedTracks
-        searchText = ""
+    }
 
+    private fun setTextAndFocusChangedListener() {
         val textWatcher = object : TextWatcher {
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -83,6 +117,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
                 searchText = inputEditText.text.toString()
                 searchHistoryGroup.visibility =
                     if (inputEditText.hasFocus() && s?.isEmpty() == true && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
+                trackRv.visibility = if (s?.isEmpty() == true) View.GONE else View.VISIBLE
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -94,8 +129,9 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
             searchHistoryGroup.visibility =
                 if (hasFocus && inputEditText.text.isEmpty() && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
         }
+    }
 
-
+    private fun setClickListeners() {
         clearBtn.setOnClickListener {
             inputEditText.setText("")
             val keyboard = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -111,7 +147,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         }
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && inputEditText.text.isNotEmpty()) {
                 searchTracks()
             }
             false
@@ -153,19 +189,6 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
                     showInternetThrowable()
                 }
             })
-    }
-
-    private fun initView(){
-        backBtn = findViewById(R.id.backIv)
-        inputEditText = findViewById(R.id.searchEt)
-        clearBtn = findViewById(R.id.clearTextIv)
-        trackRv = findViewById(R.id.trackRv)
-        placeHolderText = findViewById(R.id.placeHolderText)
-        placeHolderImage = findViewById(R.id.placeHolderImage)
-        refreshBtn = findViewById(R.id.placeHolderRefreshButton)
-        searchHistoryGroup = findViewById(R.id.searchHistoryGroup)
-        searchHistoryRv = findViewById(R.id.searchHistoryRv)
-        clearSearchHistoryBtn = findViewById(R.id.searchHistoryClearButton)
     }
 
     private fun rvAndPlaceHolderGone() {
