@@ -1,7 +1,5 @@
 package com.jar89.playlistmaker.adapters
 
-import android.content.Context
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jar89.playlistmaker.R
+import com.jar89.playlistmaker.Utils.longToTime
+import com.jar89.playlistmaker.Utils.toPx
 import com.jar89.playlistmaker.model.Track
 
-class TracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<TracksViewHolder>() {
+class TracksAdapter(private val clickListener: TrackClickListener) :
+    RecyclerView.Adapter<TracksViewHolder>() {
+
+    var tracks = ArrayList<Track>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.track_view_item, parent, false)
@@ -22,9 +26,14 @@ class TracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<Trac
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(tracks[position])
+        holder.itemView.setOnClickListener { clickListener.onTrackClick(tracks[position]) }
     }
 
     override fun getItemCount() = tracks.size
+
+    fun interface TrackClickListener {
+        fun onTrackClick(track: Track)
+    }
 }
 
 class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,7 +45,7 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(track: Track) {
         trackName.text = track.trackName
         artistName.text = track.artistName
-        trackTime.text = track.trackTime
+        trackTime.text = longToTime(track.trackTimeMillis)
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .centerInside()
@@ -46,19 +55,4 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 }
 
-fun dpToPx(dp: Float, context: Context): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp,
-        context.resources.displayMetrics
-    ).toInt()
-}
-
-fun Float.toPx(context: Context): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        this,
-        context.resources.displayMetrics
-    ).toInt()
-}
 
