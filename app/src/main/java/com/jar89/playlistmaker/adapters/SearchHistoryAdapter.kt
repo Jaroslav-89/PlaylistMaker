@@ -6,7 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.model.Track
 
-class SearchHistoryAdapter() : RecyclerView.Adapter<TracksViewHolder>() {
+class SearchHistoryAdapter(private val clickListener: TracksAdapter.TrackClickListener) :
+    RecyclerView.Adapter<TracksViewHolder>() {
 
     var searchHistoryTracks = listOf<Track>()
 
@@ -18,6 +19,7 @@ class SearchHistoryAdapter() : RecyclerView.Adapter<TracksViewHolder>() {
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
         holder.bind(searchHistoryTracks[position])
+        holder.itemView.setOnClickListener { clickListener.onTrackClick(searchHistoryTracks[position]) }
     }
 
     override fun getItemCount() = searchHistoryTracks.size

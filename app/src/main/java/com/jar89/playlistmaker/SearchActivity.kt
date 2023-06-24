@@ -2,6 +2,7 @@ package com.jar89.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -9,13 +10,11 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.jar89.playlistmaker.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.adapters.TracksAdapter
 import com.jar89.playlistmaker.api.ITunesApi
@@ -58,7 +57,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     private var tracks = ArrayList<Track>()
     private val trackAdapter = TracksAdapter(this)
-    private val searchHistoryAdapter = SearchHistoryAdapter()
+    private val searchHistoryAdapter = SearchHistoryAdapter(this)
     private var searchText = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +75,13 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         setTextAndFocusChangedListener()
 
         setClickListeners()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        searchHistoryAdapter.searchHistoryTracks = searchHistoryObj.getSavedHistoryTracks()
+        searchHistoryAdapter.notifyDataSetChanged()
     }
 
     private fun initView() {
@@ -140,10 +146,10 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
             tracks.clear()
             trackAdapter.notifyDataSetChanged()
             rvAndPlaceHolderGone()
-        }
-
-        backBtn.setOnClickListener {
-            finish()
+            searchHistoryAdapter.searchHistoryTracks = searchHistoryObj.getSavedHistoryTracks()
+            searchHistoryAdapter.notifyDataSetChanged()
+            searchHistoryGroup.visibility =
+                if (searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
         }
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -160,6 +166,10 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         clearSearchHistoryBtn.setOnClickListener {
             searchHistoryObj.clearHistory()
             searchHistoryGroup.visibility = View.GONE
+        }
+
+        backBtn.setOnClickListener {
+            finish()
         }
     }
 
@@ -238,6 +248,14 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     override fun onTrackClick(track: Track) {
         searchHistoryObj.addTrackInHistory(track)
+
+        val playerIntent = Intent(this, PlayerActivity::class.java)
+        playerIntent.putExtra("track", writeTrackToJson(track))
+        startActivity(playerIntent)
+    }
+
+    private fun writeTrackToJson(track: Track): String {
+        return Gson().toJson(track)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
