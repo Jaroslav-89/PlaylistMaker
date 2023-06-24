@@ -1,5 +1,6 @@
 package com.jar89.playlistmaker
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -14,16 +15,22 @@ import com.jar89.playlistmaker.model.Track
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivytyPlayerBinding
+    private lateinit var track: Track
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivytyPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val track = readTrackFromJson(intent.getStringExtra("track").toString())
+        track = readTrackFromJson(intent.getStringExtra("track").toString())
 
-        setAlbumImage(track)
+        setAlbumImage(this, track)
 
+        initViews()
+
+    }
+
+    private fun initViews(){
         binding.trackNameTv.text = track.trackName
         binding.artistNameTv.text = track.artistName
         binding.durationDescriptionTv.text = longToTime(track.trackTimeMillis)
@@ -36,11 +43,11 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun setAlbumImage(track: Track) {
-        Glide.with(applicationContext)
+    private fun setAlbumImage(context: Context, track: Track) {
+        Glide.with(context)
             .load(getCoverArtwork(track.artworkUrl100))
             .centerInside()
-            .transform(RoundedCorners(8f.toPx(applicationContext)))
+            .transform(RoundedCorners(8f.toPx(context)))
             .placeholder(R.drawable.img_place_holder_player_screen)
             .into(binding.placeHolderAlbum)
     }
