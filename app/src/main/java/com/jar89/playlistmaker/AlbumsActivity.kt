@@ -6,6 +6,6 @@ import android.os.Bundle
 class AlbumsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activyty_player)
+        setContentView(R.layout.activity_albums)
     }
 }

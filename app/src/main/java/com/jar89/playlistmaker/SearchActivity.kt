@@ -119,21 +119,28 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearBtn.visibility = clearButtonVisibility(s)
-                searchText = inputEditText.text.toString()
-                searchHistoryGroup.visibility =
-                    if (inputEditText.hasFocus() && s?.isEmpty() == true && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
-                trackRv.visibility = if (s?.isEmpty() == true) View.GONE else View.VISIBLE
             }
 
             override fun afterTextChanged(s: Editable?) {
+                rvAndPlaceHolderGone()
+                clearBtn.visibility = clearButtonVisibility(s)
+                if (inputEditText.text.isNotEmpty()) {
+                    searchHistoryGroup.visibility = View.GONE
+                    trackRv.visibility = View.VISIBLE
+                    searchTracks()
+                    searchText = inputEditText.text.toString()
+                } else {
+                    trackRv.visibility = View.GONE
+                    searchHistoryGroup.visibility =
+                        if (searchHistoryAdapter.searchHistoryTracks.isNotEmpty()) View.VISIBLE else View.GONE
+                }
             }
         }
 
         inputEditText.addTextChangedListener(textWatcher)
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
             searchHistoryGroup.visibility =
-                if (hasFocus && inputEditText.text.isEmpty() && searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
+                if (hasFocus && inputEditText.text.isEmpty() && searchHistoryAdapter.searchHistoryTracks.isNotEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -149,7 +156,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
             searchHistoryAdapter.searchHistoryTracks = searchHistoryObj.getSavedHistoryTracks()
             searchHistoryAdapter.notifyDataSetChanged()
             searchHistoryGroup.visibility =
-                if (searchedTracks.isNotEmpty()) View.VISIBLE else View.GONE
+                if (searchHistoryAdapter.searchHistoryTracks.isNotEmpty()) View.VISIBLE else View.GONE
         }
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
