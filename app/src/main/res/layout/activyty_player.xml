@@ -73,16 +73,16 @@
         android:layout_marginStart="24dp"
         android:background="?attr/colorPrimary"
         android:src="@drawable/ic_add_in_album_player_screen"
-        app:layout_constraintBottom_toBottomOf="@+id/playStopBtn"
+        app:layout_constraintBottom_toBottomOf="@+id/playPauseBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/playStopBtn" />
+        app:layout_constraintTop_toTopOf="@+id/playPauseBtn" />
 
     <ImageButton
-        android:id="@+id/playStopBtn"
+        android:id="@+id/playPauseBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:src="@drawable/ic_play_stop_player_screen"
+        android:src="@drawable/ic_play_player_screen"
         android:layout_marginTop="30dp"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintBottom_toTopOf="@+id/progressTimeTv"
@@ -97,9 +97,9 @@
         android:layout_marginEnd="24dp"
         android:background="?attr/colorPrimary"
         android:src="@drawable/ic_add_in_favorite_player_screen"
-        app:layout_constraintBottom_toBottomOf="@+id/playStopBtn"
+        app:layout_constraintBottom_toBottomOf="@+id/playPauseBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/playStopBtn" />
+        app:layout_constraintTop_toTopOf="@+id/playPauseBtn" />
 
     <TextView
         android:id="@+id/progressTimeTv"
@@ -112,10 +112,10 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toTopOf="@+id/durationHeadingTv"
-        app:layout_constraintEnd_toEndOf="@+id/playStopBtn"
-        app:layout_constraintStart_toStartOf="@+id/playStopBtn"
-        app:layout_constraintTop_toBottomOf="@+id/playStopBtn"
-        android:text="0:30" />
+        app:layout_constraintEnd_toEndOf="@+id/playPauseBtn"
+        app:layout_constraintStart_toStartOf="@+id/playPauseBtn"
+        app:layout_constraintTop_toBottomOf="@+id/playPauseBtn"
+        android:text="@string/start_time" />
 
     <TextView
         android:id="@+id/durationHeadingTv"
