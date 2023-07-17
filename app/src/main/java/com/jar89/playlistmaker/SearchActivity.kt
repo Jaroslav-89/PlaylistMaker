@@ -157,6 +157,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         binding.searchEt.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE && binding.searchEt.text.isNotEmpty()) {
                 searchTracks()
+                handler.removeCallbacks(searchRunnable)
             }
             false
         }

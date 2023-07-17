@@ -16,7 +16,7 @@
         android:layout_marginVertical="8dp"
         android:layout_marginStart="13dp"
         android:backgroundTint="?attr/colorPrimary"
-        android:scaleType="center"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_place_holder_search_screen" />
 
     <LinearLayout

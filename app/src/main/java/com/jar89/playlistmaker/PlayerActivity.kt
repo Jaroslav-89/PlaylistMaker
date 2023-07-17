@@ -125,7 +125,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun setAlbumImage(context: Context, track: Track) {
         Glide.with(context)
             .load(getCoverArtwork(track.artworkUrl100))
-            .centerInside()
+            .centerCrop()
             .transform(RoundedCorners(8f.toPx(context)))
             .placeholder(R.drawable.img_place_holder_player_screen)
             .into(binding.placeHolderAlbum)
