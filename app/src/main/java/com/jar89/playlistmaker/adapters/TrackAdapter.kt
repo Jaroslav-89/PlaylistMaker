@@ -48,7 +48,7 @@ class TracksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         trackTime.text = longToTime(track.trackTimeMillis)
         Glide.with(itemView)
             .load(track.artworkUrl100)
-            .centerInside()
+            .centerCrop()
             .transform(RoundedCorners(2f.toPx(itemView.context)))
             .placeholder(R.drawable.ic_place_holder_search_screen)
             .into(albumImg)

@@ -77,6 +77,18 @@
 
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/main_blue"
+        android:visibility="gone"
+        android:layout_marginTop="140dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchFl" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/trackRv"
         android:layout_width="match_parent"

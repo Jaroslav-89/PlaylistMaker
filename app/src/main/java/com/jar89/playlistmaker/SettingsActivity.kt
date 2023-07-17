@@ -3,37 +3,31 @@ package com.jar89.playlistmaker
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.FrameLayout
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.switchmaterial.SwitchMaterial
+import com.jar89.playlistmaker.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivitySettingsBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val shareBtn = findViewById<FrameLayout>(R.id.settingsShareBtn)
-        val supportBtn = findViewById<FrameLayout>(R.id.settingsSupportBtn)
-        val userAgreementBtn = findViewById<FrameLayout>(R.id.settingsUserAgreementBtn)
-        val backBtn = findViewById<ImageView>(R.id.settingsBackBtn)
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+        binding.themeSwitcher.isChecked = (applicationContext as App).darkTheme
 
-        themeSwitcher.isChecked = (applicationContext as App).darkTheme
-
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+        binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             (applicationContext as App).switchTheme(checked)
         }
 
-        shareBtn.setOnClickListener {
+        binding.settingsShareBtn.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "text/plain"
             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.practicumUrl))
             startActivity(shareIntent)
         }
 
-        supportBtn.setOnClickListener {
+        binding.settingsSupportBtn.setOnClickListener {
             val email = getString(R.string.emailSupport)
             val supportIntent = Intent(Intent.ACTION_SENDTO)
             supportIntent.data = Uri.parse("mailto:")
@@ -43,13 +37,13 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(supportIntent)
         }
 
-        userAgreementBtn.setOnClickListener {
+        binding.settingsUserAgreementBtn.setOnClickListener {
             val userAgreementIntent = Intent(Intent.ACTION_VIEW)
             userAgreementIntent.data = Uri.parse(getString(R.string.userAgreementUrl))
             startActivity(userAgreementIntent)
         }
 
-        backBtn.setOnClickListener {
+        binding.settingsBackBtn.setOnClickListener {
             finish()
         }
     }
