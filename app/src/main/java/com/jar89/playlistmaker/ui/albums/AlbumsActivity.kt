@@ -1,4 +1,4 @@
-package com.jar89.playlistmaker
+package com.jar89.playlistmaker.ui.albums
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

@@ -1,5 +1,6 @@
-package com.jar89.playlistmaker.api
+package com.jar89.playlistmaker.data.network
 
+import com.jar89.playlistmaker.data.dto.TracksResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

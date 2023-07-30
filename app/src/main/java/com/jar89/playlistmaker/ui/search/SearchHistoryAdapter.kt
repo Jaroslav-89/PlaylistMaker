@@ -1,10 +1,10 @@
-package com.jar89.playlistmaker.adapters
+package com.jar89.playlistmaker.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jar89.playlistmaker.R
-import com.jar89.playlistmaker.model.Track
+import com.jar89.playlistmaker.domain.entity.Track
 
 class SearchHistoryAdapter(private val clickListener: TracksAdapter.TrackClickListener) :
     RecyclerView.Adapter<TracksViewHolder>() {

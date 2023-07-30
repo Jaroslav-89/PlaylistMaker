@@ -8,8 +8,11 @@ const val DAY_NIGHT_THEME_PREFERENCES = "day_night_theme"
 const val DAY_NIGHT_THEME_KEY = "day_night_theme_key"
 
 class App : Application() {
-    
-    lateinit var sharedPrefs: SharedPreferences
+
+    companion object{
+        lateinit var sharedPrefs: SharedPreferences
+    }
+
     var darkTheme = false
 
     override fun onCreate() {
