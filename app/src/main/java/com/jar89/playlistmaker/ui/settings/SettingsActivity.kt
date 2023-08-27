@@ -1,9 +1,11 @@
-package com.jar89.playlistmaker
+package com.jar89.playlistmaker.ui.settings
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.jar89.playlistmaker.App
+import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {

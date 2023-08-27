@@ -1,6 +1,5 @@
-package com.jar89.playlistmaker
+package com.jar89.playlistmaker.ui.search
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,23 +8,20 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
-import com.jar89.playlistmaker.adapters.SearchHistoryAdapter
-import com.jar89.playlistmaker.adapters.TracksAdapter
-import com.jar89.playlistmaker.api.ITunesApi
-import com.jar89.playlistmaker.api.TracksResponse
+import com.jar89.playlistmaker.Creator
+import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.ActivitySearchBinding
-import com.jar89.playlistmaker.model.Track
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.jar89.playlistmaker.domain.Consumer
+import com.jar89.playlistmaker.domain.entity.ConsumerData
+import com.jar89.playlistmaker.domain.entity.Track
+import com.jar89.playlistmaker.domain.impl.TrackInteractorImpl
+import com.jar89.playlistmaker.ui.player.PlayerActivity
 
 const val SEARCH_HISTORY_TRACKS = "search_history_tracks"
 
@@ -39,18 +35,12 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { searchTracks() }
+
+
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var binding: ActivitySearchBinding
-
-    private val itunesBaseUrl = "https://itunes.apple.com"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(itunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val itunesService = retrofit.create(ITunesApi::class.java)
-
-    private lateinit var searchHistoryObj: SearchHistory
     private lateinit var searchedTracks: List<Track>
+    private lateinit var trackInteractor: TrackInteractorImpl
 
     private var tracks = ArrayList<Track>()
     private val trackAdapter = TracksAdapter(this)
@@ -64,7 +54,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
         setKeyboardFocus()
 
-        getHistoryFromsharedPrefs()
+        getTrackInteractor()
 
         setTrackAdapter()
 
@@ -80,14 +70,13 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     override fun onResume() {
         super.onResume()
-        searchHistoryAdapter.searchHistoryTracks = searchHistoryObj.getSavedHistoryTracks()
+        searchHistoryAdapter.searchHistoryTracks = trackInteractor.getAllTracks()
         searchHistoryAdapter.notifyDataSetChanged()
     }
 
-    private fun getHistoryFromsharedPrefs() {
+    private fun getTrackInteractor() {
         sharedPrefs = getSharedPreferences(SEARCH_HISTORY_TRACKS, MODE_PRIVATE)
-        searchHistoryObj = SearchHistory(sharedPrefs)
-        searchedTracks = searchHistoryObj.getSavedHistoryTracks()
+        trackInteractor = Creator.provideSearchAndHistoryInteractor(sharedPrefs)
     }
 
     private fun setTrackAdapter() {
@@ -97,6 +86,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     private fun setSearchHistoryAdapter() {
         binding.searchHistoryRv.adapter = searchHistoryAdapter
+        searchedTracks = trackInteractor.getAllTracks()
         searchHistoryAdapter.searchHistoryTracks = searchedTracks
     }
 
@@ -149,7 +139,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
             tracks.clear()
             trackAdapter.notifyDataSetChanged()
             rvAndPlaceHolderGone()
-            searchHistoryAdapter.searchHistoryTracks = searchHistoryObj.getSavedHistoryTracks()
+            searchHistoryAdapter.searchHistoryTracks = trackInteractor.getAllTracks()
             searchHistoryAdapter.notifyDataSetChanged()
             showHistoryTrackRv()
         }
@@ -167,7 +157,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         }
 
         binding.searchHistoryClearButton.setOnClickListener {
-            searchHistoryObj.clearHistory()
+            trackInteractor.clearHistory()
             binding.searchHistoryGroup.visibility = View.GONE
         }
 
@@ -180,33 +170,40 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         rvAndPlaceHolderGone()
         if (searchText.isNotEmpty()) {
             binding.progressBar.visibility = View.VISIBLE
-            itunesService.searchTrack(searchText)
-                .enqueue(object : Callback<TracksResponse> {
-                    @SuppressLint("NotifyDataSetChanged")
-                    override fun onResponse(
-                        call: Call<TracksResponse>,
-                        response: Response<TracksResponse>
-                    ) {
-                        binding.progressBar.visibility = View.GONE
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                showTracksList(response)
+            trackInteractor.searchTracks(
+                searchText,
+                consumer = object : Consumer<List<Track>> {
+                    override fun consume(data: ConsumerData<List<Track>>) {
+                        handler.post {
+                            binding.progressBar.visibility = View.GONE
+                            when (data) {
+                                is ConsumerData.Error -> {
+                                    Log.d("XXX", "ошибка поискового запроса")
+                                    showInternetThrowable()
+                                }
+
+                                is ConsumerData.Data -> {
+                                    if (data.value.isNotEmpty()) {
+                                        showTracksList(data.value)
+                                    } else {
+                                        showSearchFail()
+                                    }
+                                }
+
                             }
-                            if (tracks.isEmpty()) {
-                                showSearchFail()
-                            }
-                        } else {
-                            showInternetThrowable()
                         }
                     }
 
-                    override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                        binding.progressBar.visibility = View.GONE
-                        showInternetThrowable()
-                    }
                 })
         }
+    }
+
+    private fun showTracksList(trackList: List<Track>) {
+        tracks.clear()
+        tracks.addAll(trackList)
+        trackAdapter.notifyDataSetChanged()
+        binding.trackRv.visibility = View.VISIBLE
+        binding.trackRv.scrollToPosition(0)
     }
 
     private fun rvAndPlaceHolderGone() {
@@ -214,13 +211,6 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         binding.placeHolderText.visibility = View.GONE
         binding.placeHolderRefreshButton.visibility = View.GONE
         binding.trackRv.visibility = View.GONE
-    }
-
-    private fun showTracksList(response: Response<TracksResponse>) {
-        tracks.addAll(response.body()?.results!!)
-        trackAdapter.notifyDataSetChanged()
-        binding.trackRv.visibility = View.VISIBLE
-        binding.trackRv.scrollToPosition(0)
     }
 
     private fun showSearchFail() {
@@ -261,7 +251,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     override fun onTrackClick(track: Track) {
         if (clickDebounce()) {
-            searchHistoryObj.addTrackInHistory(track)
+            trackInteractor.saveTrack(track)
 
             val playerIntent = Intent(this, PlayerActivity::class.java)
             playerIntent.putExtra("track", writeTrackToJson(track))

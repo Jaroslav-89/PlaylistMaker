@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Utils {
-    fun longToTime(trackTime: Long): String {
+    fun longToTime(trackTime: Long?): String {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
     }
 
