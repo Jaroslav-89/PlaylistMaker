@@ -1,57 +1,44 @@
 package com.jar89.playlistmaker.settings.ui.activity
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.jar89.playlistmaker.App
-import com.jar89.playlistmaker.R
+import androidx.lifecycle.ViewModelProvider
 import com.jar89.playlistmaker.databinding.ActivitySettingsBinding
+import com.jar89.playlistmaker.settings.ui.view_model.SettingsViewModel
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
+    private lateinit var settingsViewModel: SettingsViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.themeSwitcher.isChecked = (applicationContext as App).darkTheme
+        initViewModel()
 
-        binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
+        binding.themeSwitcher.isChecked = settingsViewModel.isDarkMode()
+
+        binding.themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
+            settingsViewModel.updateThemeSettings(isChecked)
         }
 
-        binding.settingsShareBtn.setOnClickListener {
-            val shareIntent = Intent(Intent.ACTION_SEND)
-            shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.practicumUrl))
-            startActivity(shareIntent)
-        }
+        binding.settingsShareBtn.setOnClickListener { settingsViewModel.shareApp() }
 
-        binding.settingsSupportBtn.setOnClickListener {
-            val email = getString(R.string.emailSupport)
-            val supportIntent = Intent(Intent.ACTION_SENDTO)
-            supportIntent.data = Uri.parse("mailto:")
-            supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-            supportIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.emailSupportSubject))
-            supportIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.emailSupportMessage))
-            try{
-                startActivity(supportIntent)
-            } catch (e: Error){
-                return@setOnClickListener
-            }
+        binding.settingsSupportBtn.setOnClickListener { settingsViewModel.contactSupport() }
 
-        }
-
-        binding.settingsUserAgreementBtn.setOnClickListener {
-            val userAgreementIntent = Intent(Intent.ACTION_VIEW)
-            userAgreementIntent.data = Uri.parse(getString(R.string.userAgreementUrl))
-            startActivity(userAgreementIntent)
-        }
+        binding.settingsUserAgreementBtn.setOnClickListener { settingsViewModel.openTerms() }
 
         binding.settingsBackBtn.setOnClickListener {
             finish()
         }
+    }
+
+    private fun initViewModel() {
+        settingsViewModel = ViewModelProvider(
+            this,
+            SettingsViewModel.getViewModelFactory()
+        )[SettingsViewModel::class.java]
     }
 }

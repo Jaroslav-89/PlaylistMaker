@@ -13,6 +13,11 @@ import com.jar89.playlistmaker.search.data.storage.SearchHistoryStorage
 import com.jar89.playlistmaker.search.domain.api.TrackInteractor
 import com.jar89.playlistmaker.search.domain.api.TrackRepository
 import com.jar89.playlistmaker.search.domain.impl.TrackInteractorImpl
+import com.jar89.playlistmaker.settings.data.repository.SettingsRepositoryImpl
+import com.jar89.playlistmaker.settings.domain.api.SettingsRepository
+import com.jar89.playlistmaker.sharing.data.navigation.ExternalNavigator
+import com.jar89.playlistmaker.sharing.data.repository.SharingRepositoryImpl
+import com.jar89.playlistmaker.sharing.domain.api.SharingRepository
 
 object Creator {
 
@@ -22,6 +27,20 @@ object Creator {
 
     fun provideSearchAndHistoryInteractor(context: Context): TrackInteractor {
         return TrackInteractorImpl(getHistoryRepository(context))
+    }
+
+    fun provideSharingRepository(context: Context): SharingRepository {
+        return SharingRepositoryImpl(
+            provideExternalNavigator(context), context
+        )
+    }
+
+    private fun provideExternalNavigator(context: Context): ExternalNavigator {
+        return ExternalNavigator(context)
+    }
+
+    fun provideSettingsRepository(context: Context): SettingsRepository {
+        return SettingsRepositoryImpl(context)
     }
 
     private fun getPlayer(trackUrl: String?): Player {

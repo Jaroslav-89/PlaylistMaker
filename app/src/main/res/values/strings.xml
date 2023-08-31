@@ -22,11 +22,11 @@
     <string name="share_tv">Поделиться приложением</string>
     <string name="support_tv">Написать в поддержку</string>
     <string name="agreement_tv">Пользовательское соглашение</string>
-    <string name="practicumUrl">https://practicum.yandex.ru/android-developer/</string>
-    <string name="emailSupport">jaroslavnefrit@yandex.ru</string>
-    <string name="emailSupportSubject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
-    <string name="emailSupportMessage">Спасибо разработчикам и разработчицам за крутое приложение!</string>
-    <string name="userAgreementUrl">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="practicum_url">https://practicum.yandex.ru/android-developer/</string>
+    <string name="email_support">jaroslavnefrit@yandex.ru</string>
+    <string name="email_support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="email_support_message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="user_agreement_url">https://yandex.ru/legal/practicum_offer/</string>
     <!--    player activity-->
     <string name="duration">Длительность</string>
     <string name="album">Альбом</string>

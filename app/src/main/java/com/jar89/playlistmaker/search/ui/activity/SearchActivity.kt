@@ -59,6 +59,13 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (searchText.isEmpty()) {
+            loadSearchHistory()
+        }
+    }
+
     private fun renderState(it: SearchActivityState) {
         when (it) {
             is SearchActivityState.Loading -> showLoading()
@@ -121,6 +128,8 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
         binding.trackRv.visibility = View.GONE
         binding.searchHistoryGroup.visibility = View.GONE
         binding.placeHolderImage.visibility = View.GONE
+        binding.placeHolderText.visibility = View.GONE
+        binding.placeHolderRefreshButton.visibility = View.GONE
         binding.progressBar.visibility = View.VISIBLE
     }
 
@@ -187,7 +196,6 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
             tracksList.clear()
             trackAdapter.notifyDataSetChanged()
             binding.placeHolderImage.visibility = View.GONE
-            // rvAndPlaceHolderGone()
             if (tracksInHistory.isNotEmpty()) {
                 binding.searchHistoryGroup.visibility = View.VISIBLE
             }

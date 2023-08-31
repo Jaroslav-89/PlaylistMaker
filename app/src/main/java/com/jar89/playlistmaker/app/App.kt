@@ -1,4 +1,4 @@
-package com.jar89.playlistmaker
+package com.jar89.playlistmaker.app
 
 import android.app.Application
 import android.content.SharedPreferences
@@ -9,7 +9,7 @@ const val DAY_NIGHT_THEME_KEY = "day_night_theme_key"
 
 class App : Application() {
 
-    companion object{
+    companion object {
         lateinit var sharedPrefs: SharedPreferences
     }
 
@@ -24,7 +24,6 @@ class App : Application() {
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        darkTheme = darkThemeEnabled
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
                 AppCompatDelegate.MODE_NIGHT_YES
