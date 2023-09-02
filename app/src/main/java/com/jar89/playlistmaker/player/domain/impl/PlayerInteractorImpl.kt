@@ -24,7 +24,7 @@ class PlayerInteractorImpl(private val player: Player) :
         return player.elapsedTime()
     }
 
-    override fun getPlayerState(): LiveData<PlayerState> {
+    override fun getPlayerState(): PlayerState {
         return player.playerState()
     }
 }

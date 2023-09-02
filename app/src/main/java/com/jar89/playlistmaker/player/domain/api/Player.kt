@@ -1,6 +1,5 @@
 package com.jar89.playlistmaker.player.domain.api
 
-import androidx.lifecycle.LiveData
 import com.jar89.playlistmaker.player.domain.model.PlayerState
 
 interface Player {
@@ -13,5 +12,5 @@ interface Player {
 
     fun elapsedTime(): Int
 
-    fun playerState(): LiveData<PlayerState>
+    fun playerState(): PlayerState
 }

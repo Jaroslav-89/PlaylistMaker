@@ -19,9 +19,7 @@ class SettingsViewModel(
             }
         }
     }
-
-    private val sharingRepository = Creator.provideSharingRepository(application)
-    private val settingsRepository = Creator.provideSettingsRepository(application)
+    private val settingsInteractor = Creator.provideSettingsInteractor(application)
 
     fun isDarkMode(): Boolean {
         return settingsRepository.getThemeSettings().darkMode

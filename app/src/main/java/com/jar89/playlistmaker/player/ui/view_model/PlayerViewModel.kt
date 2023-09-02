@@ -27,14 +27,17 @@ class PlayerViewModel(trackUrl: String?) : ViewModel() {
     }
 
     private val playerInteractor = Creator.providePlayerInteractor(trackUrl)
-    val playerState = playerInteractor.getPlayerState()
 
     private val looper = Looper.getMainLooper()
     private val handler = Handler(looper)
     private val timerRunnable = Runnable { updateTimer() }
 
+    private val _playerState = MutableLiveData<PlayerState>(PlayerState.STATE_DEFAULT)
     private val _elapsedTime = MutableLiveData<String>(INITIAL_TIME)
 
+    val playerState: LiveData<PlayerState>
+        get() = _playerState
+    //_playerState.value = playerInteractor.getPlayerState()
     val elapsedTime: LiveData<String>
         get() = _elapsedTime
 
@@ -51,6 +54,7 @@ class PlayerViewModel(trackUrl: String?) : ViewModel() {
             else -> return
         }
         updateTimer()
+        updatePlayerState()
     }
 
     private fun play() {
@@ -59,6 +63,10 @@ class PlayerViewModel(trackUrl: String?) : ViewModel() {
 
     fun pause() {
         playerInteractor.pause()
+    }
+
+    private fun updatePlayerState() {
+        _playerState.value = playerInteractor.getPlayerState()
     }
 
     private fun updateTimer() {
