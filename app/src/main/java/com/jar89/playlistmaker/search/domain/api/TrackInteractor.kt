@@ -1,6 +1,6 @@
 package com.jar89.playlistmaker.search.domain.api
 
-import com.jar89.playlistmaker.search.domain.model.ErrorType
+import com.jar89.playlistmaker.search.data.dto.ErrorType
 import com.jar89.playlistmaker.search.domain.model.Track
 
 interface TrackInteractor {

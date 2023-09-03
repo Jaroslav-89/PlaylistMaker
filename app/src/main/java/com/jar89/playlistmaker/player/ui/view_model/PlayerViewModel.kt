@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.jar89.playlistmaker.creator.Creator
-import com.jar89.playlistmaker.player.domain.model.PlayerState
 import java.util.Locale
 
 class PlayerViewModel(trackUrl: String?) : ViewModel() {
@@ -32,14 +31,21 @@ class PlayerViewModel(trackUrl: String?) : ViewModel() {
     private val handler = Handler(looper)
     private val timerRunnable = Runnable { updateTimer() }
 
-    private val _playerState = MutableLiveData<PlayerState>(PlayerState.STATE_DEFAULT)
-    private val _elapsedTime = MutableLiveData<String>(INITIAL_TIME)
+    private val _playerState = MutableLiveData<PlayerState>()
+    private val _elapsedTime = MutableLiveData<String>()
 
     val playerState: LiveData<PlayerState>
         get() = _playerState
-    //_playerState.value = playerInteractor.getPlayerState()
+
     val elapsedTime: LiveData<String>
         get() = _elapsedTime
+
+    fun createPlayer() {
+        playerInteractor.createPlayer {
+            _playerState.postValue(playerInteractor.getPlayerState())
+        }
+        updateTimer()
+    }
 
     fun playbackControl() {
         when (playerState.value) {
@@ -53,19 +59,21 @@ class PlayerViewModel(trackUrl: String?) : ViewModel() {
 
             else -> return
         }
-        updateTimer()
-        updatePlayerState()
     }
 
     private fun play() {
         playerInteractor.play()
+        updatePlayerState()
+        updateTimer()
     }
 
     fun pause() {
         playerInteractor.pause()
+        updatePlayerState()
+        updateTimer()
     }
 
-    private fun updatePlayerState() {
+    fun updatePlayerState() {
         _playerState.value = playerInteractor.getPlayerState()
     }
 

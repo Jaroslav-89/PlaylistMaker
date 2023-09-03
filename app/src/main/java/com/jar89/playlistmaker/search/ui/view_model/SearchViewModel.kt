@@ -13,8 +13,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.creator.Creator
 import com.jar89.playlistmaker.search.domain.api.TrackInteractor
-import com.jar89.playlistmaker.search.domain.model.ErrorType
-import com.jar89.playlistmaker.search.domain.model.SearchActivityState
+import com.jar89.playlistmaker.search.data.dto.ErrorType
 import com.jar89.playlistmaker.search.domain.model.Track
 
 class SearchViewModel(application: Application) : AndroidViewModel(application) {
@@ -22,7 +21,6 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY_IN_MILLIS = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
-        private const val CLICK_DEBOUNCE_DELAY_IN_MILLIS = 1000L
 
         fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -33,12 +31,15 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
     private val trackInteractor = Creator.provideSearchAndHistoryInteractor(application)
     private val handler = Handler(Looper.getMainLooper())
-    private var isClickAllowed = true
     private var latestSearchText: String? = null
 
     private val _state = MutableLiveData<SearchActivityState>()
+    private val _lastSearchText = MutableLiveData<String>()
     val state: LiveData<SearchActivityState>
         get() = _state
+
+    val lastSearchText: LiveData<String>
+        get() = _lastSearchText
 
     fun searchDebounce(changedText: String) {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
@@ -75,22 +76,11 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
-    fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed(
-                { isClickAllowed = true },
-                CLICK_DEBOUNCE_DELAY_IN_MILLIS
-            )
-        }
-        return current
-    }
-
     private fun getHistoryTrack() = trackInteractor.getAllTracks()
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
+            _lastSearchText.value = newSearchText
             renderState(SearchActivityState.Loading)
 
             trackInteractor.searchTracks(newSearchText, object : TrackInteractor.TracksConsumer {

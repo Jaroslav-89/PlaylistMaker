@@ -6,8 +6,8 @@ import com.jar89.playlistmaker.search.data.dto.TracksResponse
 import com.jar89.playlistmaker.search.data.mappers.TrackListMapper
 import com.jar89.playlistmaker.search.data.storage.SearchHistoryStorage
 import com.jar89.playlistmaker.search.domain.api.TrackRepository
-import com.jar89.playlistmaker.search.domain.model.ErrorType
-import com.jar89.playlistmaker.search.domain.model.Resource
+import com.jar89.playlistmaker.search.data.dto.ErrorType
+import com.jar89.playlistmaker.search.data.dto.Resource
 import com.jar89.playlistmaker.search.domain.model.Track
 
 class TrackRepositoryImpl(

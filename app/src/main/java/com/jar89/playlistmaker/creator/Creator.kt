@@ -19,7 +19,9 @@ import com.jar89.playlistmaker.settings.domain.api.SettingsRepository
 import com.jar89.playlistmaker.settings.domain.impl.SettingsInteractorImpl
 import com.jar89.playlistmaker.sharing.data.navigation.ExternalNavigator
 import com.jar89.playlistmaker.sharing.data.repository.SharingRepositoryImpl
+import com.jar89.playlistmaker.sharing.domain.api.SharingInteractor
 import com.jar89.playlistmaker.sharing.domain.api.SharingRepository
+import com.jar89.playlistmaker.sharing.domain.impl.SharingInteractorImpl
 
 object Creator {
 
@@ -32,7 +34,11 @@ object Creator {
     }
 
     fun provideSettingsInteractor(context: Context): SettingsInteractor {
-        return SettingsInteractorImpl(getSharingRepository(context), getSettingsRepository(context))
+        return SettingsInteractorImpl(getSettingsRepository(context))
+    }
+
+    fun provideSharingInteractor(context: Context): SharingInteractor {
+        return SharingInteractorImpl(getSharingRepository(context))
     }
 
     private fun getSharingRepository(context: Context): SharingRepository {

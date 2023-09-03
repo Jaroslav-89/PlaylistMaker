@@ -1,4 +1,4 @@
-package com.jar89.playlistmaker.player.domain.model
+package com.jar89.playlistmaker.player.ui.view_model
 
 enum class PlayerState {
     STATE_DEFAULT,

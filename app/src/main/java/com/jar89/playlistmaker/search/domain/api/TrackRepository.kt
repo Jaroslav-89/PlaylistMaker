@@ -1,6 +1,6 @@
 package com.jar89.playlistmaker.search.domain.api
 
-import com.jar89.playlistmaker.search.domain.model.Resource
+import com.jar89.playlistmaker.search.data.dto.Resource
 import com.jar89.playlistmaker.search.domain.model.Track
 
 interface TrackRepository {

@@ -2,7 +2,7 @@ package com.jar89.playlistmaker.search.domain.impl
 
 import com.jar89.playlistmaker.search.domain.api.TrackInteractor
 import com.jar89.playlistmaker.search.domain.api.TrackRepository
-import com.jar89.playlistmaker.search.domain.model.Resource
+import com.jar89.playlistmaker.search.data.dto.Resource
 import com.jar89.playlistmaker.search.domain.model.Track
 import java.util.concurrent.Executors
 

@@ -3,34 +3,36 @@ package com.jar89.playlistmaker.search.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.ActivitySearchBinding
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.player.ui.activity.PlayerActivity
-import com.jar89.playlistmaker.search.domain.model.SearchActivityState
+import com.jar89.playlistmaker.search.ui.view_model.SearchActivityState
 import com.jar89.playlistmaker.search.ui.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
 import com.jar89.playlistmaker.search.ui.view_model.SearchViewModel
 
 
-class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
+class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
     companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
     private lateinit var binding: ActivitySearchBinding
     private lateinit var searchViewModel: SearchViewModel
 
-    private val tracksInHistory = ArrayList<Track>()
-    private val tracksList = ArrayList<Track>()
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter(this)
     private var searchText = ""
@@ -61,9 +63,7 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
 
     override fun onResume() {
         super.onResume()
-        if (searchText.isEmpty()) {
-            loadSearchHistory()
-        }
+        loadSearchHistory()
     }
 
     private fun renderState(it: SearchActivityState) {
@@ -77,14 +77,14 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
     }
 
     private fun showHistory(tracks: List<Track>) {
-        tracksInHistory.clear()
-        tracksInHistory.addAll(tracks)
+        searchHistoryAdapter.searchHistoryTracks.clear()
+        searchHistoryAdapter.searchHistoryTracks.addAll(tracks)
         binding.placeHolderImage.visibility = View.GONE
         binding.placeHolderText.visibility = View.GONE
         binding.placeHolderRefreshButton.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
         binding.trackRv.visibility = View.GONE
-        if (tracksInHistory.isNotEmpty()) {
+        if (tracks.isNotEmpty()) {
             binding.searchHistoryGroup.visibility = View.VISIBLE
             searchHistoryAdapter.notifyDataSetChanged()
         }
@@ -119,8 +119,8 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
         binding.placeHolderRefreshButton.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
         binding.trackRv.visibility = View.VISIBLE
-        tracksList.clear()
-        tracksList.addAll(foundTracks)
+        trackAdapter.tracks.clear()
+        trackAdapter.tracks.addAll(foundTracks)
         trackAdapter.notifyDataSetChanged()
     }
 
@@ -146,13 +146,13 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
 
     private fun setTrackAdapter() {
         binding.trackRv.adapter = trackAdapter
-        trackAdapter.tracks = tracksList
+        trackAdapter.tracks = ArrayList<Track>()
     }
 
     private fun setSearchHistoryAdapter() {
         binding.searchHistoryRv.adapter = searchHistoryAdapter
         searchViewModel.showHistory()
-        searchHistoryAdapter.searchHistoryTracks = tracksInHistory
+        searchHistoryAdapter.searchHistoryTracks = ArrayList<Track>()
     }
 
     private fun setTextAndFocusChangedListener() {
@@ -168,7 +168,6 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                searchText = s.toString()
             }
         }
 
@@ -193,10 +192,10 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
         binding.clearTextIv.setOnClickListener {
             binding.searchEt.setText("")
             setKeyboardFocus()
-            tracksList.clear()
+            trackAdapter.tracks.clear()
             trackAdapter.notifyDataSetChanged()
             binding.placeHolderImage.visibility = View.GONE
-            if (tracksInHistory.isNotEmpty()) {
+            if (searchHistoryAdapter.searchHistoryTracks.isNotEmpty()) {
                 binding.searchHistoryGroup.visibility = View.VISIBLE
             }
         }
@@ -236,7 +235,7 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
     }
 
     override fun onTrackClick(track: Track) {
-        if (searchViewModel.clickDebounce()) {
+        if (clickDebounce()) {
             searchViewModel.saveTrack(track)
 
             val playerIntent = Intent(this, PlayerActivity::class.java)
@@ -245,17 +244,16 @@ class SearchActivity : ComponentActivity(), TracksAdapter.TrackClickListener {
         }
     }
 
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
     private fun writeTrackToJson(track: Track): String {
         return Gson().toJson(track)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, searchText)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        binding.searchEt.setText(savedInstanceState.getString(SEARCH_TEXT, ""))
     }
 }

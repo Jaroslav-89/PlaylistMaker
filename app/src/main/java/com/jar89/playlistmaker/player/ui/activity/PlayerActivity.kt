@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -12,13 +12,13 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.ActivityPlayerBinding
-import com.jar89.playlistmaker.player.domain.model.PlayerState
+import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.jar89.playlistmaker.search.domain.model.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerActivity : ComponentActivity() {
+class PlayerActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_KEY_TRACK = "track"
@@ -41,9 +41,15 @@ class PlayerActivity : ComponentActivity() {
 
         observeViewModel()
 
+        createPlayer()
+
         binding.backBtn.setOnClickListener {
             finish()
         }
+    }
+
+    private fun createPlayer() {
+        playerViewModel.createPlayer()
     }
 
     override fun onPause() {
@@ -114,6 +120,11 @@ class PlayerActivity : ComponentActivity() {
         binding.playPauseBtn.setImageResource(R.drawable.ic_play_player_screen)
         binding.playPauseBtn.alpha = 0.5f
         binding.playPauseBtn.isEnabled = false
+        checkReadyMediaPlayer()
+    }
+
+    private fun checkReadyMediaPlayer() {
+        playerViewModel.updatePlayerState()
     }
 
     private fun showPlayBtn() {

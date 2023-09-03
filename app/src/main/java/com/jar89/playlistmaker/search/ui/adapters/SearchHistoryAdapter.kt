@@ -9,7 +9,7 @@ import com.jar89.playlistmaker.search.domain.model.Track
 class SearchHistoryAdapter(private val clickListener: TracksAdapter.TrackClickListener) :
     RecyclerView.Adapter<TracksViewHolder>() {
 
-    var searchHistoryTracks = listOf<Track>()
+    var searchHistoryTracks = ArrayList<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
         val binding = TrackViewItemBinding.inflate(

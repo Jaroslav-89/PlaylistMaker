@@ -2,6 +2,8 @@ package com.jar89.playlistmaker.settings.ui.view_model
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -19,21 +21,29 @@ class SettingsViewModel(
             }
         }
     }
-    private val settingsInteractor = Creator.provideSettingsInteractor(application)
 
-    fun isDarkMode(): Boolean {
-        return settingsRepository.getThemeSettings().darkMode
-    }
+    private val _themeSwitcherState = MutableLiveData<Boolean>()
+
+    private val settingsInteractor = Creator.provideSettingsInteractor(application)
+    private val sharingInteractor = Creator.provideSharingInteractor(application)
+
+    val themeSwitcherState: LiveData<Boolean>
+        get() = _themeSwitcherState
 
     fun updateThemeSettings(isDarkModeChecked: Boolean) {
-        settingsRepository.updateThemeSettings(
+        settingsInteractor.updateThemeSettings(
             ThemeSettings(isDarkModeChecked)
         )
+        _themeSwitcherState.value = settingsInteractor.getThemeSettings().darkMode
+    }
+
+    fun checkTheme(){
+        _themeSwitcherState.value = settingsInteractor.getThemeSettings().darkMode
     }
 
     fun shareApp() {
         try {
-            sharingRepository.shareApp()
+            sharingInteractor.shareApp()
         } catch (e: Exception) {
             return
         }
@@ -41,7 +51,7 @@ class SettingsViewModel(
 
     fun contactSupport() {
         try {
-            sharingRepository.contactSupport()
+            sharingInteractor.contactSupport()
         } catch (e: Exception) {
             return
         }
@@ -49,7 +59,7 @@ class SettingsViewModel(
 
     fun openTerms() {
         try {
-            sharingRepository.openTerms()
+            sharingInteractor.openTerms()
         } catch (e: Exception) {
             return
         }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.jar89.playlistmaker.databinding.ActivitySettingsBinding
+import com.jar89.playlistmaker.settings.domain.model.ThemeSettings
 import com.jar89.playlistmaker.settings.ui.view_model.SettingsViewModel
 
 class SettingsActivity : AppCompatActivity() {
@@ -18,7 +19,9 @@ class SettingsActivity : AppCompatActivity() {
 
         initViewModel()
 
-        binding.themeSwitcher.isChecked = settingsViewModel.isDarkMode()
+        checkTheme()
+
+        observeThemeSwitcherState()
 
         binding.themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.updateThemeSettings(isChecked)
@@ -40,5 +43,19 @@ class SettingsActivity : AppCompatActivity() {
             this,
             SettingsViewModel.getViewModelFactory()
         )[SettingsViewModel::class.java]
+    }
+
+    private fun checkTheme(){
+        settingsViewModel.checkTheme()
+    }
+
+    private fun observeThemeSwitcherState() {
+        settingsViewModel.themeSwitcherState.observe(this) {
+            renderState(it)
+        }
+    }
+
+    private fun renderState(darkMode: Boolean) {
+        binding.themeSwitcher.isChecked = darkMode
     }
 }

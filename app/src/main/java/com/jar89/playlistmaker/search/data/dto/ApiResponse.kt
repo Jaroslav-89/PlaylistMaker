@@ -1,4 +1,4 @@
-package com.jar89.playlistmaker.search.domain.model
+package com.jar89.playlistmaker.search.data.dto
 
 sealed interface ApiResponse<T> {
     data class Success<T> (val data: T): ApiResponse<T>

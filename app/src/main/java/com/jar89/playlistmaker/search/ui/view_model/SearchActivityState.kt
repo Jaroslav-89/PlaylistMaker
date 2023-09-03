@@ -1,4 +1,6 @@
-package com.jar89.playlistmaker.search.domain.model
+package com.jar89.playlistmaker.search.ui.view_model
+
+import com.jar89.playlistmaker.search.domain.model.Track
 
 sealed interface SearchActivityState {
     object Loading : SearchActivityState
