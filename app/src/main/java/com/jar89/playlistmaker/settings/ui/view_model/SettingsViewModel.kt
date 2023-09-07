@@ -4,28 +4,17 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.jar89.playlistmaker.creator.Creator
+import com.jar89.playlistmaker.settings.domain.api.SettingsInteractor
 import com.jar89.playlistmaker.settings.domain.model.ThemeSettings
+import com.jar89.playlistmaker.sharing.domain.api.SharingInteractor
 
 class SettingsViewModel(
-    private val application: Application
+    application: Application,
+    private val settingsInteractor: SettingsInteractor,
+    private val sharingInteractor: SharingInteractor
 ) : AndroidViewModel(application) {
 
-    companion object {
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SettingsViewModel(this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-            }
-        }
-    }
-
     private val _themeSwitcherState = MutableLiveData<Boolean>()
-
-    private val settingsInteractor = Creator.provideSettingsInteractor(application)
-    private val sharingInteractor = Creator.provideSharingInteractor(application)
 
     val themeSwitcherState: LiveData<Boolean>
         get() = _themeSwitcherState
@@ -37,7 +26,7 @@ class SettingsViewModel(
         _themeSwitcherState.value = settingsInteractor.getThemeSettings().darkMode
     }
 
-    fun checkTheme(){
+    fun checkTheme() {
         _themeSwitcherState.value = settingsInteractor.getThemeSettings().darkMode
     }
 

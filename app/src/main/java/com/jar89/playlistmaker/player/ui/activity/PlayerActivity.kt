@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -15,6 +14,7 @@ import com.jar89.playlistmaker.databinding.ActivityPlayerBinding
 import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.jar89.playlistmaker.search.domain.model.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -24,9 +24,10 @@ class PlayerActivity : AppCompatActivity() {
         private const val EXTRA_KEY_TRACK = "track"
     }
 
-    private lateinit var playerViewModel: PlayerViewModel
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var track: Track
+
+    private val playerViewModel: PlayerViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +35,6 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         track = readTrackFromJson(intent.getStringExtra(EXTRA_KEY_TRACK).toString())
-
-        initViewModel()
 
         setTrackInfoAndAlbumImg()
 
@@ -49,19 +48,12 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun createPlayer() {
-        playerViewModel.createPlayer()
+        playerViewModel.createPlayer(track.previewUrl)
     }
 
     override fun onPause() {
         super.onPause()
         playerViewModel.pause()
-    }
-
-    private fun initViewModel() {
-        playerViewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getViewModelFactory(track.previewUrl)
-        )[PlayerViewModel::class.java]
     }
 
     private fun setTrackInfoAndAlbumImg() {

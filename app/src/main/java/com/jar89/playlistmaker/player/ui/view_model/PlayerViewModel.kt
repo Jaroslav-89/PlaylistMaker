@@ -6,26 +6,15 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.jar89.playlistmaker.creator.Creator
+import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
 import java.util.Locale
 
-class PlayerViewModel(trackUrl: String?) : ViewModel() {
+class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
 
     companion object {
         private const val UPDATE_DELAY = 100L
         private const val INITIAL_TIME = "00:00"
-
-        fun getViewModelFactory(trackUrl: String?): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(trackUrl)
-            }
-        }
     }
-
-    private val playerInteractor = Creator.providePlayerInteractor(trackUrl)
 
     private val looper = Looper.getMainLooper()
     private val handler = Handler(looper)
@@ -40,8 +29,8 @@ class PlayerViewModel(trackUrl: String?) : ViewModel() {
     val elapsedTime: LiveData<String>
         get() = _elapsedTime
 
-    fun createPlayer() {
-        playerInteractor.createPlayer {
+    fun createPlayer(trackUrl: String?) {
+        playerInteractor.createPlayer(trackUrl) {
             _playerState.postValue(playerInteractor.getPlayerState())
         }
         updateTimer()

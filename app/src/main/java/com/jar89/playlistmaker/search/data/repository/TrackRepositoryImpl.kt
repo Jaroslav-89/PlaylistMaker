@@ -12,10 +12,9 @@ import com.jar89.playlistmaker.search.domain.model.Track
 
 class TrackRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val storage: SearchHistoryStorage
+    private val storage: SearchHistoryStorage,
+    private val mapper: TrackListMapper
 ) : TrackRepository {
-
-    private val mapper = TrackListMapper()
 
     override fun searchTracks(expression: String): Resource<List<Track>> {
         val response = networkClient.doRequest(TrackSearchRequest(expression))

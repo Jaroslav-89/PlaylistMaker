@@ -4,7 +4,7 @@ import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 
 interface Player {
 
-    fun createPlayer(completion: () -> Unit)
+    fun createPlayer(trackUrl: String?, completion: () -> Unit)
 
     fun play()
 

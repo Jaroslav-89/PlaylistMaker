@@ -4,12 +4,11 @@ import android.media.MediaPlayer
 import com.jar89.playlistmaker.player.domain.api.Player
 import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 
-class PlayerImpl(private val trackUrl: String?) : Player {
+class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 
     private var playerState = PlayerState.STATE_DEFAULT
-    private var mediaPlayer = MediaPlayer()
 
-    override fun createPlayer(completion: () -> Unit) {
+    override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
         if (trackUrl != null) {
             with(mediaPlayer) {
                 try {
