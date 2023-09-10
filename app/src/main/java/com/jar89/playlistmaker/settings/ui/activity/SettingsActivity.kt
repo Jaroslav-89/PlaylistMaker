@@ -2,22 +2,19 @@ package com.jar89.playlistmaker.settings.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.jar89.playlistmaker.databinding.ActivitySettingsBinding
-import com.jar89.playlistmaker.settings.domain.model.ThemeSettings
 import com.jar89.playlistmaker.settings.ui.view_model.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var settingsViewModel: SettingsViewModel
+    private val settingsViewModel: SettingsViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        initViewModel()
 
         checkTheme()
 
@@ -38,14 +35,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViewModel() {
-        settingsViewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getViewModelFactory()
-        )[SettingsViewModel::class.java]
-    }
-
-    private fun checkTheme(){
+    private fun checkTheme() {
         settingsViewModel.checkTheme()
     }
 

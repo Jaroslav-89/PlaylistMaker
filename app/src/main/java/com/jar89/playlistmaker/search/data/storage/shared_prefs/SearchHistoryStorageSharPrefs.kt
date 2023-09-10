@@ -1,13 +1,12 @@
 package com.jar89.playlistmaker.search.data.storage.shared_prefs
 
-import android.content.Context
-import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.jar89.playlistmaker.search.data.dto.TrackDto
 import com.jar89.playlistmaker.search.data.storage.SearchHistoryStorage
 
 
-class SearchHistoryStorageSharPrefs(private val context: Context) :
+class SearchHistoryStorageSharPrefs(private val sharedPrefs: SharedPreferences, private val gson: Gson) :
     SearchHistoryStorage {
 
     companion object {
@@ -17,9 +16,6 @@ class SearchHistoryStorageSharPrefs(private val context: Context) :
     }
 
     private var tracksHistory = mutableListOf<TrackDto>()
-    private val sharedPrefs = context.getSharedPreferences(
-        SEARCH_HISTORY_PREFERENCES, MODE_PRIVATE
-    )
 
     override fun getSavedHistoryTracks(): List<TrackDto> {
         tracksHistory = readHistoryFromJson()
@@ -44,11 +40,11 @@ class SearchHistoryStorageSharPrefs(private val context: Context) :
     private fun readHistoryFromJson(): MutableList<TrackDto> {
         val json =
             sharedPrefs.getString(HISTORY_TRACKS_KEY, null) ?: return mutableListOf()
-        return Gson().fromJson(json, Array<TrackDto>::class.java).toMutableList()
+        return gson.fromJson(json, Array<TrackDto>::class.java).toMutableList()
     }
 
     private fun writeHistoryToJson(searchTracksHistory: List<TrackDto>) {
-        val json = Gson().toJson(searchTracksHistory)
+        val json = gson.toJson(searchTracksHistory)
         sharedPrefs.edit()
             .putString(HISTORY_TRACKS_KEY, json)
             .apply()

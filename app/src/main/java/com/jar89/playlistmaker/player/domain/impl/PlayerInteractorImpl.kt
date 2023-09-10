@@ -6,8 +6,8 @@ import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 
 class PlayerInteractorImpl(private val player: Player) :
     PlayerInteractor {
-    override fun createPlayer(completion: () -> Unit) {
-        player.createPlayer(completion)
+    override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
+        player.createPlayer(trackUrl, completion)
     }
 
     override fun play() {

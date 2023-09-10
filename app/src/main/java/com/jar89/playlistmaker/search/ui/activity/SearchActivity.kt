@@ -11,7 +11,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.ActivitySearchBinding
@@ -21,28 +20,28 @@ import com.jar89.playlistmaker.search.ui.view_model.SearchActivityState
 import com.jar89.playlistmaker.search.ui.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
 import com.jar89.playlistmaker.search.ui.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
+class SearchActivity() : AppCompatActivity(), TracksAdapter.TrackClickListener {
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_ET_TEXT = "search_et_text"
     }
 
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var searchViewModel: SearchViewModel
+    private val searchViewModel: SearchViewModel by viewModel()
 
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter(this)
-    private var searchText = ""
+    private var savedSearchRequest = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        initViewModel()
 
         setKeyboardFocus()
 
@@ -56,6 +55,8 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
         setClickListeners()
 
+        setupSearchEditText()
+
         searchViewModel.state.observe(this) {
             renderState(it)
         }
@@ -63,7 +64,9 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     override fun onResume() {
         super.onResume()
-        loadSearchHistory()
+        if (binding.searchEt.text.isEmpty()) {
+            loadSearchHistory()
+        }
     }
 
     private fun renderState(it: SearchActivityState) {
@@ -84,7 +87,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         binding.placeHolderRefreshButton.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
         binding.trackRv.visibility = View.GONE
-        if (tracks.isNotEmpty()) {
+        if (tracks.isNotEmpty() && binding.searchEt.text.isEmpty()) {
             binding.searchHistoryGroup.visibility = View.VISIBLE
             searchHistoryAdapter.notifyDataSetChanged()
         }
@@ -133,11 +136,8 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
         binding.progressBar.visibility = View.VISIBLE
     }
 
-    private fun initViewModel() {
-        searchViewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getViewModelFactory()
-        )[SearchViewModel::class.java]
+    private fun setupSearchEditText() {
+        binding.searchEt.setText(savedSearchRequest)
     }
 
     private fun loadSearchHistory() {
@@ -168,6 +168,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                savedSearchRequest = s.toString()
             }
         }
 
@@ -179,7 +180,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     private fun setKeyboardFocus() {
         val keyboard = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (searchText.isEmpty()) {
+        if (binding.searchEt.text.isEmpty()) {
             binding.searchEt.requestFocus()
             keyboard.showSoftInput(binding.searchEt, InputMethodManager.SHOW_IMPLICIT)
         } else {
@@ -255,5 +256,15 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.TrackClickListener {
 
     private fun writeTrackToJson(track: Track): String {
         return Gson().toJson(track)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        savedSearchRequest = savedInstanceState.getString(SEARCH_ET_TEXT, "")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_ET_TEXT, savedSearchRequest)
     }
 }
