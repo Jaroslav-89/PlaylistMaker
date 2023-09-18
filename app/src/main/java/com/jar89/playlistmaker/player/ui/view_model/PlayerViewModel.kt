@@ -11,16 +11,11 @@ import java.util.Locale
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
 
-    companion object {
-        private const val UPDATE_DELAY = 100L
-        private const val INITIAL_TIME = "00:00"
-    }
-
     private val looper = Looper.getMainLooper()
     private val handler = Handler(looper)
     private val timerRunnable = Runnable { updateTimer() }
 
-    private val _playerState = MutableLiveData<PlayerState>()
+    private val _playerState = MutableLiveData<PlayerState>(PlayerState.STATE_DEFAULT)
     private val _elapsedTime = MutableLiveData<String>()
 
     val playerState: LiveData<PlayerState>
@@ -31,9 +26,9 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     fun createPlayer(trackUrl: String?) {
         playerInteractor.createPlayer(trackUrl) {
+
             _playerState.postValue(playerInteractor.getPlayerState())
         }
-        updateTimer()
     }
 
     fun playbackControl() {
@@ -63,13 +58,13 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     }
 
     fun updatePlayerState() {
-        _playerState.value = playerInteractor.getPlayerState()
+        _playerState.postValue(playerInteractor.getPlayerState())
     }
 
     private fun updateTimer() {
-        when (playerState.value) {
+        when (playerInteractor.getPlayerState()) {
             PlayerState.STATE_PLAYING -> {
-                _elapsedTime.value = getCurrentPosition(playerInteractor.getElapsedTime())
+                _elapsedTime.postValue(getCurrentPosition(playerInteractor.getElapsedTime()))
                 handler.postDelayed(timerRunnable, UPDATE_DELAY)
             }
 
@@ -90,10 +85,18 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     override fun onCleared() {
         super.onCleared()
         releasePlayer()
+        _playerState.postValue(PlayerState.STATE_DEFAULT)
     }
 
-    private fun releasePlayer() {
+    fun releasePlayer() {
         playerInteractor.release()
+        handler.removeCallbacks(timerRunnable)
         updateTimer()
+        _playerState.postValue(PlayerState.STATE_DEFAULT)
+    }
+
+    companion object {
+        private const val UPDATE_DELAY = 100L
+        private const val INITIAL_TIME = "00:00"
     }
 }

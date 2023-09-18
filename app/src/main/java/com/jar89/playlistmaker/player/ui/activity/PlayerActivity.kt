@@ -20,10 +20,6 @@ import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
 
-    companion object {
-        private const val EXTRA_KEY_TRACK = "track"
-    }
-
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var track: Track
 
@@ -36,15 +32,22 @@ class PlayerActivity : AppCompatActivity() {
 
         track = readTrackFromJson(intent.getStringExtra(EXTRA_KEY_TRACK).toString())
 
+        createPlayer()
+
         setTrackInfoAndAlbumImg()
 
         observeViewModel()
 
-        createPlayer()
-
         binding.backBtn.setOnClickListener {
+            playerViewModel.releasePlayer()
             finish()
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        playerViewModel.releasePlayer()
+        finish()
     }
 
     private fun createPlayer() {
@@ -54,6 +57,11 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         playerViewModel.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        playerViewModel.releasePlayer()
     }
 
     private fun setTrackInfoAndAlbumImg() {
@@ -164,5 +172,9 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun readTrackFromJson(track: String): Track {
         return Gson().fromJson(track, Track::class.java)
+    }
+
+    companion object {
+        private const val EXTRA_KEY_TRACK = "track"
     }
 }

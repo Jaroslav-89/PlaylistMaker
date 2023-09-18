@@ -10,9 +10,6 @@ import com.jar89.playlistmaker.databinding.FragmentPlaylistBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
-    companion object {
-        fun newInstance() = PlaylistFragment()
-    }
 
     private val viewModel: PlaylistViewModel by viewModel()
     private lateinit var binding: FragmentPlaylistBinding
@@ -24,5 +21,9 @@ class PlaylistFragment : Fragment() {
     ): View? {
         binding = FragmentPlaylistBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    companion object {
+        fun newInstance() = PlaylistFragment()
     }
 }
