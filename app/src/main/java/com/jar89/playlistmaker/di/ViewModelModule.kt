@@ -1,5 +1,7 @@
 package com.jar89.playlistmaker.di
 
+import com.jar89.playlistmaker.albums.ui.view_model.FavoritesViewModel
+import com.jar89.playlistmaker.albums.ui.view_model.PlaylistViewModel
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.jar89.playlistmaker.search.ui.view_model.SearchViewModel
 import com.jar89.playlistmaker.settings.ui.view_model.SettingsViewModel
@@ -28,4 +30,8 @@ val viewModelModule = module {
             sharingInteractor = get()
         )
     }
+
+    viewModel { FavoritesViewModel() }
+
+    viewModel { PlaylistViewModel() }
 }

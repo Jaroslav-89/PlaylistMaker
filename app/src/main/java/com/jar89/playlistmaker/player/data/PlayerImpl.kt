@@ -7,7 +7,6 @@ import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 
     private var playerState = PlayerState.STATE_DEFAULT
-
     override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
         if (trackUrl != null) {
             with(mediaPlayer) {
@@ -38,8 +37,12 @@ class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
     }
 
     override fun pause() {
-        mediaPlayer.pause()
-        playerState = PlayerState.STATE_PAUSED
+        if (playerState == PlayerState.STATE_PLAYING) {
+            mediaPlayer.pause()
+            playerState = PlayerState.STATE_PAUSED
+        } else {
+            release()
+        }
     }
 
     override fun release() {
