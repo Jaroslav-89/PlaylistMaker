@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".search.ui.fragment.SearchFragment">
 
     <ImageView
         android:id="@+id/backIv"
