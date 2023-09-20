@@ -1,12 +1,10 @@
 package com.jar89.playlistmaker.albums.ui.fragments
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class AlbumsViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
-    FragmentStateAdapter(fragmentManager, lifecycle) {
+class AlbumsViewPagerAdapter(parentFragment: Fragment) :
+    FragmentStateAdapter(parentFragment) {
 
     override fun getItemCount(): Int {
         return 2

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="search_throwable_day_night">#ffffff</color>
+    <color name="bottom_navigation_view">#1A1B22</color>
+    <color name="bottom_navigation_ic_color">#ffffff</color>
 </resources>

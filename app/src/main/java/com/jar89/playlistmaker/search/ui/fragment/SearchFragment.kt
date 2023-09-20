@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.jar89.playlistmaker.R
@@ -33,7 +32,6 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
     private val handler = Handler(Looper.getMainLooper())
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter(this)
-    private var savedSearchRequest = ""
     private lateinit var binding: FragmentSearchBinding
 
     override fun onCreateView(
@@ -59,8 +57,6 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         setTextAndFocusChangedListener()
 
         setClickListeners()
-
-        setupSearchEditText()
 
         searchViewModel.state.observe(viewLifecycleOwner) {
             renderState(it)
@@ -141,10 +137,6 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         binding.progressBar.visibility = View.VISIBLE
     }
 
-    private fun setupSearchEditText() {
-        binding.searchEt.setText(savedSearchRequest)
-    }
-
     private fun loadSearchHistory() {
         searchViewModel.showHistory()
     }
@@ -173,7 +165,6 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                savedSearchRequest = s.toString()
             }
         }
 
@@ -262,11 +253,5 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
-
-        //        fun newInstance() = SearchFragment()
-//
-//        const val TAG = "SearchFragment"
-        fun createArgs(): Bundle =
-            bundleOf()
     }
 }

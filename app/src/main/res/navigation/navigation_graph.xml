@@ -3,29 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/mainFragment">
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.jar89.playlistmaker.main.ui.fragment.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
-        <action
-            android:id="@+id/action_mainFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_albumsFragment"
-            app:destination="@id/albumsFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-    </fragment>
+    app:startDestination="@id/albumsFragment">
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.jar89.playlistmaker.search.ui.fragment.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
+        tools:layout="@layout/fragment_search">
         <action
-            android:id="@+id/action_searchFragment_to_playerActivity"
+            android:id="@+id/action_searchFragment_to_playerActivity2"
             app:destination="@id/playerActivity" />
     </fragment>
     <fragment

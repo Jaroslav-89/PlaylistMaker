@@ -50,9 +50,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
                 android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="5dp"
+                android:layout_weight="0"
                 android:src="@drawable/ic_ellipse_search_screen"
                 app:tint="?attr/colorOnSecondaryContainer" />
 

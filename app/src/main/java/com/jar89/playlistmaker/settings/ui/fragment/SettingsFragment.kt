@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.jar89.playlistmaker.databinding.FragmentSettingsBinding
 import com.jar89.playlistmaker.settings.ui.view_model.SettingsViewModel
@@ -54,13 +53,5 @@ class SettingsFragment : Fragment() {
 
     private fun renderState(darkMode: Boolean) {
         binding.themeSwitcher.isChecked = darkMode
-    }
-
-    companion object {
-        //        fun newInstance() = SettingsFragment()
-//
-//        const val TAG = "SettingsFragment"
-        fun createArgs(): Bundle =
-            bundleOf()
     }
 }
