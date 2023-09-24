@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Playlist Maker</string>
-    <!--    main activity-->
     <string name="header">Playlist Maker</string>
     <string name="search_btn">Поиск</string>
     <string name="albums_btn">Медиатека</string>

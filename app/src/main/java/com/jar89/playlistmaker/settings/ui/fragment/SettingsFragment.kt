@@ -1,20 +1,30 @@
-package com.jar89.playlistmaker.settings.ui.activity
+package com.jar89.playlistmaker.settings.ui.fragment
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.jar89.playlistmaker.databinding.ActivitySettingsBinding
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.jar89.playlistmaker.databinding.FragmentSettingsBinding
 import com.jar89.playlistmaker.settings.ui.view_model.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : Fragment() {
 
-    private lateinit var binding: ActivitySettingsBinding
+    private lateinit var binding: FragmentSettingsBinding
     private val settingsViewModel: SettingsViewModel by viewModel()
-    override fun onCreate(savedInstanceState: Bundle?) {
 
-        super.onCreate(savedInstanceState)
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         checkTheme()
 
@@ -29,10 +39,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.settingsSupportBtn.setOnClickListener { settingsViewModel.contactSupport() }
 
         binding.settingsUserAgreementBtn.setOnClickListener { settingsViewModel.openTerms() }
-
-        binding.settingsBackBtn.setOnClickListener {
-            finish()
-        }
     }
 
     private fun checkTheme() {
@@ -40,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun observeThemeSwitcherState() {
-        settingsViewModel.themeSwitcherState.observe(this) {
+        settingsViewModel.themeSwitcherState.observe(viewLifecycleOwner) {
             renderState(it)
         }
     }
