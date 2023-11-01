@@ -3,8 +3,6 @@ package com.jar89.playlistmaker.di
 import android.content.Context
 import android.media.MediaPlayer
 import com.google.gson.Gson
-import com.jar89.playlistmaker.player.data.PlayerImpl
-import com.jar89.playlistmaker.player.domain.api.Player
 import com.jar89.playlistmaker.search.data.mappers.TrackListMapper
 import com.jar89.playlistmaker.search.data.network.ITunesApi
 import com.jar89.playlistmaker.search.data.network.NetworkClient
@@ -53,15 +51,6 @@ val dataModule = module {
             sharedPrefs = get(),
             gson = get()
         )
-    }
-
-    //Player
-    factory {
-        MediaPlayer()
-    }
-
-    factory<Player> {
-        PlayerImpl(mediaPlayer = get())
     }
 
     //Settings

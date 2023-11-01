@@ -3,7 +3,6 @@ package com.jar89.playlistmaker.player.ui.activity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -36,17 +35,17 @@ class PlayerActivity : AppCompatActivity() {
 
         setTrackInfoAndAlbumImg()
 
-        observeViewModel()
-
         binding.backBtn.setOnClickListener {
-            playerViewModel.releasePlayer()
             finish()
+        }
+
+        playerViewModel.playerState.observe(this) {
+            renderState(it)
         }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        playerViewModel.releasePlayer()
         finish()
     }
 
@@ -56,12 +55,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        playerViewModel.pause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        playerViewModel.releasePlayer()
+        playerViewModel.onPause()
     }
 
     private fun setTrackInfoAndAlbumImg() {
@@ -98,38 +92,29 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeViewModel() {
-        playerViewModel.playerState.observe(this) {
-            renderState(it)
-        }
-        playerViewModel.elapsedTime.observe(this) {
-            binding.progressTimeTv.text = it
-        }
-    }
-
     private fun renderState(state: PlayerState) {
-        when (state) {
-            PlayerState.STATE_PLAYING -> showPauseBtn()
-            PlayerState.STATE_PAUSED, PlayerState.STATE_PREPARED -> showPlayBtn()
-            PlayerState.STATE_DEFAULT -> showNotReady()
-            PlayerState.STATE_ERROR -> showError()
+        if (state.buttonIsPlay) {
+            showPlayBtn()
+        } else {
+            showPauseBtn()
         }
+
+        if (!state.isPlayButtonEnabled) {
+            showNotReady()
+        }
+
+        binding.progressTimeTv.text = state.progress
     }
 
     private fun showNotReady() {
         binding.playPauseBtn.setImageResource(R.drawable.ic_play_player_screen)
         binding.playPauseBtn.alpha = 0.5f
         binding.playPauseBtn.isEnabled = false
-        checkReadyMediaPlayer()
-    }
-
-    private fun checkReadyMediaPlayer() {
-        playerViewModel.updatePlayerState()
     }
 
     private fun showPlayBtn() {
         binding.playPauseBtn.setOnClickListener {
-            playerViewModel.playbackControl()
+            playerViewModel.onPlayButtonClicked()
         }
         binding.playPauseBtn.setImageResource(R.drawable.ic_play_player_screen)
         binding.playPauseBtn.alpha = 1f
@@ -138,26 +123,10 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun showPauseBtn() {
         binding.playPauseBtn.setOnClickListener {
-            playerViewModel.playbackControl()
+            playerViewModel.onPlayButtonClicked()
         }
         binding.playPauseBtn.setImageResource(R.drawable.ic_pause_player_screen)
         binding.playPauseBtn.isEnabled = true
-    }
-
-    private fun showError() {
-        binding.playPauseBtn.setOnClickListener {
-            showToast(getString(R.string.error_loading_preview))
-        }
-        binding.playPauseBtn.setImageResource(R.drawable.ic_play_player_screen)
-        binding.playPauseBtn.alpha = 0.5f
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(
-            this,
-            message,
-            Toast.LENGTH_SHORT
-        ).show()
     }
 
     private fun getCoverArtwork(artworkUrl100: String?) =

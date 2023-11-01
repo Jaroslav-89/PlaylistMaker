@@ -3,8 +3,6 @@ package com.jar89.playlistmaker.search.ui.fragment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.FragmentSearchBinding
@@ -21,6 +20,7 @@ import com.jar89.playlistmaker.search.ui.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
 import com.jar89.playlistmaker.search.ui.view_model.SearchActivityState
 import com.jar89.playlistmaker.search.ui.view_model.SearchViewModel
+import com.jar89.playlistmaker.util.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import android.view.ViewGroup as ViewGroup1
 
@@ -28,11 +28,21 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
 
     private val searchViewModel: SearchViewModel by viewModel()
 
-    private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter(this)
     private lateinit var binding: FragmentSearchBinding
+
+    private val onTrackClickDebounce = debounce<Track>(
+        CLICK_DEBOUNCE_DELAY,
+        lifecycleScope,
+        false
+    ) { track ->
+        searchViewModel.saveTrack(track)
+
+        val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
+        playerIntent.putExtra("track", writeTrackToJson(track))
+        startActivity(playerIntent)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -229,22 +239,7 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
     }
 
     override fun onTrackClick(track: Track) {
-        if (clickDebounce()) {
-            searchViewModel.saveTrack(track)
-
-            val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
-            playerIntent.putExtra("track", writeTrackToJson(track))
-            startActivity(playerIntent)
-        }
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
+        onTrackClickDebounce(track)
     }
 
     private fun writeTrackToJson(track: Track): String {
@@ -252,6 +247,6 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
     }
 
     companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY = 300L
     }
 }
