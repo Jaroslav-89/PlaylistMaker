@@ -6,8 +6,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.jar89.playlistmaker.search.data.dto.Response
 import com.jar89.playlistmaker.search.data.dto.TrackSearchRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class RetrofitNetworkClient(
     private val context: Context,
@@ -24,14 +22,12 @@ class RetrofitNetworkClient(
         if (dto !is TrackSearchRequest) {
             return Response().apply { resultCode = 400 }
         }
-        return withContext(Dispatchers.IO) {
-            try {
+        return try {
                 val response = itunesService.searchTrack(dto.expression)
                 response.apply { resultCode = 200 }
             } catch (e: Throwable) {
                 Response().apply { resultCode = 500 }
             }
-        }
     }
 
     @SuppressLint("NewApi")

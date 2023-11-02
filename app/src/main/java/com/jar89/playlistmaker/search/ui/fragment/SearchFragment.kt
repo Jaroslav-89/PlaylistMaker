@@ -11,10 +11,10 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.gson.Gson
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.FragmentSearchBinding
 import com.jar89.playlistmaker.player.ui.activity.PlayerActivity
+import com.jar89.playlistmaker.player.ui.activity.PlayerActivity.Companion.EXTRA_KEY_TRACK
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.search.ui.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
@@ -28,20 +28,17 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
 
     private val searchViewModel: SearchViewModel by viewModel()
 
+    private var isClickAllowed = true
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter(this)
     private lateinit var binding: FragmentSearchBinding
 
-    private val onTrackClickDebounce = debounce<Track>(
+    private val onTrackClickDebounce = debounce<Boolean>(
         CLICK_DEBOUNCE_DELAY,
         lifecycleScope,
         false
-    ) { track ->
-        searchViewModel.saveTrack(track)
-
-        val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
-        playerIntent.putExtra("track", writeTrackToJson(track))
-        startActivity(playerIntent)
+    ) { param ->
+        isClickAllowed = param
     }
 
     override fun onCreateView(
@@ -77,6 +74,8 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         super.onResume()
         if (binding.searchEt.text.isEmpty()) {
             loadSearchHistory()
+        } else {
+            searchViewModel.showTracksAfterChangeScreen()
         }
     }
 
@@ -84,8 +83,8 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         when (it) {
             is SearchActivityState.Loading -> showLoading()
             is SearchActivityState.Content -> showFoundTracks(it.tracks)
-            is SearchActivityState.Empty -> showEmpty(it.message)
-            is SearchActivityState.Error -> showError(it.errorMessage)
+            is SearchActivityState.Empty -> showEmpty(requireContext().getString(R.string.place_holder_text_search_fail))
+            is SearchActivityState.Error -> showError(requireContext().getString(R.string.place_holder_text_internet_throwable))
             is SearchActivityState.SearchHistory -> showHistory(it.tracks)
         }
     }
@@ -216,6 +215,7 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         }
 
         binding.placeHolderRefreshButton.setOnClickListener {
+            searchViewModel.searchDebounce("")
             search()
         }
 
@@ -239,14 +239,25 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
     }
 
     override fun onTrackClick(track: Track) {
-        onTrackClickDebounce(track)
+        if (clickDebounce()) {
+            searchViewModel.saveTrack(track)
+
+            val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
+            playerIntent.putExtra(EXTRA_KEY_TRACK, track)
+            startActivity(playerIntent)
+        }
     }
 
-    private fun writeTrackToJson(track: Track): String {
-        return Gson().toJson(track)
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            onTrackClickDebounce(true)
+        }
+        return current
     }
 
     companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 300L
+        private const val CLICK_DEBOUNCE_DELAY = 500L
     }
 }

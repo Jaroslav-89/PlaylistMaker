@@ -3,14 +3,14 @@ package com.jar89.playlistmaker.player.ui.view_model
 sealed class PlayerState(
     val isPlayButtonEnabled: Boolean,
     val buttonIsPlay: Boolean,
-    val progress: String
+    val progress: Int
 ) {
 
-    class Default : PlayerState(false, true, "00:00")
+    class Default : PlayerState(false, true, 0)
 
-    class Prepared : PlayerState(true, true, "00:00")
+    class Prepared : PlayerState(true, true, 0)
 
-    class Playing(progress: String) : PlayerState(true, false, progress)
+    class Playing(progress: Int) : PlayerState(true, false, progress)
 
-    class Paused(progress: String) : PlayerState(true, true, progress)
+    class Paused(progress: Int) : PlayerState(true, true, progress)
 }

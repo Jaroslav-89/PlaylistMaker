@@ -1,27 +1,27 @@
 package com.jar89.playlistmaker.search.ui.view_model
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.search.data.dto.ErrorType
 import com.jar89.playlistmaker.search.domain.api.TrackInteractor
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.util.debounce
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SearchViewModel(
-    application: Application,
     private val trackInteractor: TrackInteractor
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY_IN_MILLIS = 2000L
     }
 
     private var latestSearchText: String? = null
+    private val tracks = mutableListOf<Track>()
 
     private val searchTrackDebounce = debounce<String>(
         SEARCH_DEBOUNCE_DELAY_IN_MILLIS,
@@ -59,6 +59,14 @@ class SearchViewModel(
         )
     }
 
+    fun showTracksAfterChangeScreen() {
+        renderState(
+            SearchActivityState.Content(
+                tracks = tracks
+            )
+        )
+    }
+
     private fun getHistoryTrack() = trackInteractor.getAllTracks()
 
     private fun searchRequest(searchText: String) {
@@ -67,17 +75,18 @@ class SearchViewModel(
             renderState(SearchActivityState.Loading)
 
             viewModelScope.launch {
-                trackInteractor
-                    .searchTracks(searchText)
-                    .collect { pair ->
-                        processResult(pair.first, pair.second)
-                    }
+                withContext(Dispatchers.IO) {
+                    trackInteractor
+                        .searchTracks(searchText)
+                        .collect { pair ->
+                            processResult(pair.first, pair.second)
+                        }
+                }
             }
         }
     }
 
     private fun processResult(foundTracks: List<Track>?, errorMessage: ErrorType?) {
-        val tracks = mutableListOf<Track>()
         if (foundTracks != null) {
             tracks.addAll(foundTracks)
         }
@@ -85,24 +94,20 @@ class SearchViewModel(
         when {
             errorMessage != null -> {
                 renderState(
-                    SearchActivityState.Error(
-                        errorMessage = getApplication<Application>().getString(R.string.place_holder_text_internet_throwable),
-                    )
+                    SearchActivityState.Error
                 )
             }
 
             tracks.isEmpty() -> {
                 renderState(
-                    SearchActivityState.Empty(
-                        message = getApplication<Application>().getString(R.string.place_holder_text_search_fail),
-                    )
+                    SearchActivityState.Empty
                 )
             }
 
             else -> {
                 renderState(
                     SearchActivityState.Content(
-                        tracks = tracks,
+                        tracks = tracks
                     )
                 )
             }

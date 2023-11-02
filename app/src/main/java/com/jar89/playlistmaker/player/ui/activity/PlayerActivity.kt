@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.gson.Gson
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.ActivityPlayerBinding
 import com.jar89.playlistmaker.player.ui.view_model.PlayerState
@@ -29,7 +28,7 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        track = readTrackFromJson(intent.getStringExtra(EXTRA_KEY_TRACK).toString())
+        track = intent.getParcelableExtra<Track>(EXTRA_KEY_TRACK)!!
 
         createPlayer()
 
@@ -103,7 +102,7 @@ class PlayerActivity : AppCompatActivity() {
             showNotReady()
         }
 
-        binding.progressTimeTv.text = state.progress
+        binding.progressTimeTv.text = getCurrentPosition(state.progress)
     }
 
     private fun showNotReady() {
@@ -139,11 +138,10 @@ class PlayerActivity : AppCompatActivity() {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
     }
 
-    private fun readTrackFromJson(track: String): Track {
-        return Gson().fromJson(track, Track::class.java)
-    }
+    private fun getCurrentPosition(time: Int) =
+        android.icu.text.SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
 
     companion object {
-        private const val EXTRA_KEY_TRACK = "track"
+        const val EXTRA_KEY_TRACK = "track"
     }
 }
