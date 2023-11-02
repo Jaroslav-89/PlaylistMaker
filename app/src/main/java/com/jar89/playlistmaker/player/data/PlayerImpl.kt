@@ -7,6 +7,7 @@ import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 
     private lateinit var playerState: PlayerState
+
     override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
         if (trackUrl != null) {
             with(mediaPlayer) {
