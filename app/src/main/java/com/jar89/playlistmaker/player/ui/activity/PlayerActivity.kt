@@ -9,7 +9,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.ActivityPlayerBinding
-import com.jar89.playlistmaker.player.ui.view_model.PlayerState
+import com.jar89.playlistmaker.player.domain.model.PlayerState
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.jar89.playlistmaker.search.domain.model.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel

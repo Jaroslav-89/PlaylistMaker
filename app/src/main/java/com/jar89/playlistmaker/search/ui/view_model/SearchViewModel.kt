@@ -10,7 +10,6 @@ import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.util.debounce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SearchViewModel(
     private val trackInteractor: TrackInteractor
@@ -74,14 +73,12 @@ class SearchViewModel(
 
             renderState(SearchActivityState.Loading)
 
-            viewModelScope.launch {
-                withContext(Dispatchers.IO) {
-                    trackInteractor
-                        .searchTracks(searchText)
-                        .collect { pair ->
-                            processResult(pair.first, pair.second)
-                        }
-                }
+            viewModelScope.launch(Dispatchers.IO) {
+                trackInteractor
+                    .searchTracks(searchText)
+                    .collect { pair ->
+                        processResult(pair.first, pair.second)
+                    }
             }
         }
     }
