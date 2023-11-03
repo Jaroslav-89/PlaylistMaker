@@ -4,15 +4,15 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.jar89.playlistmaker.settings.domain.api.SettingsInteractor
 import com.jar89.playlistmaker.settings.domain.model.ThemeSettings
 import com.jar89.playlistmaker.sharing.domain.api.SharingInteractor
 
 class SettingsViewModel(
-    application: Application,
     private val settingsInteractor: SettingsInteractor,
     private val sharingInteractor: SharingInteractor
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val _themeSwitcherState = MutableLiveData<Boolean>()
 

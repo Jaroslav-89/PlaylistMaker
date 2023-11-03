@@ -3,8 +3,6 @@ package com.jar89.playlistmaker.search.ui.fragment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,15 +10,17 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import com.google.gson.Gson
+import androidx.lifecycle.lifecycleScope
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.FragmentSearchBinding
 import com.jar89.playlistmaker.player.ui.activity.PlayerActivity
+import com.jar89.playlistmaker.player.ui.activity.PlayerActivity.Companion.EXTRA_KEY_TRACK
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.search.ui.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
 import com.jar89.playlistmaker.search.ui.view_model.SearchActivityState
 import com.jar89.playlistmaker.search.ui.view_model.SearchViewModel
+import com.jar89.playlistmaker.util.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import android.view.ViewGroup as ViewGroup1
 
@@ -29,10 +29,17 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
     private val searchViewModel: SearchViewModel by viewModel()
 
     private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter(this)
     private lateinit var binding: FragmentSearchBinding
+
+    private val onTrackClickDebounce = debounce<Boolean>(
+        CLICK_DEBOUNCE_DELAY,
+        lifecycleScope,
+        false
+    ) { param ->
+        isClickAllowed = param
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +74,8 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         super.onResume()
         if (binding.searchEt.text.isEmpty()) {
             loadSearchHistory()
+        } else {
+            searchViewModel.showTracksAfterChangeScreen()
         }
     }
 
@@ -74,8 +83,8 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         when (it) {
             is SearchActivityState.Loading -> showLoading()
             is SearchActivityState.Content -> showFoundTracks(it.tracks)
-            is SearchActivityState.Empty -> showEmpty(it.message)
-            is SearchActivityState.Error -> showError(it.errorMessage)
+            is SearchActivityState.Empty -> showEmpty(requireContext().getString(R.string.place_holder_text_search_fail))
+            is SearchActivityState.Error -> showError(requireContext().getString(R.string.place_holder_text_internet_throwable))
             is SearchActivityState.SearchHistory -> showHistory(it.tracks)
         }
     }
@@ -206,6 +215,7 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         }
 
         binding.placeHolderRefreshButton.setOnClickListener {
+            searchViewModel.searchDebounce("")
             search()
         }
 
@@ -233,7 +243,7 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
             searchViewModel.saveTrack(track)
 
             val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
-            playerIntent.putExtra("track", writeTrackToJson(track))
+            playerIntent.putExtra(EXTRA_KEY_TRACK, track)
             startActivity(playerIntent)
         }
     }
@@ -242,16 +252,12 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+            onTrackClickDebounce(true)
         }
         return current
     }
 
-    private fun writeTrackToJson(track: Track): String {
-        return Gson().toJson(track)
-    }
-
     companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY = 500L
     }
 }

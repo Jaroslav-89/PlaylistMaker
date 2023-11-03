@@ -15,18 +15,19 @@ class RetrofitNetworkClient(
         const val ITUNES_BASE_URL = "https://itunes.apple.com"
     }
 
-    override fun doRequest(dto: Any): Response {
+    override suspend fun doRequest(dto: Any): Response {
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
         if (dto !is TrackSearchRequest) {
             return Response().apply { resultCode = 400 }
         }
-        val response = itunesService.searchTrack(dto.expression).execute()
-        val body = response.body()
-        return body?.apply { resultCode = response.code() } ?: Response().apply {
-            resultCode = response.code()
-        }
+        return try {
+                val response = itunesService.searchTrack(dto.expression)
+                response.apply { resultCode = 200 }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
     }
 
     @SuppressLint("NewApi")

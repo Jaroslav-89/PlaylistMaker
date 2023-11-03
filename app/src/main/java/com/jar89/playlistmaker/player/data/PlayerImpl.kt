@@ -6,7 +6,7 @@ import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 
 class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 
-    private var playerState = PlayerState.STATE_DEFAULT
+    private lateinit var playerState: PlayerState
     override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
         if (trackUrl != null) {
             with(mediaPlayer) {
@@ -14,47 +14,66 @@ class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
                     setDataSource(trackUrl)
                     prepareAsync()
                 } catch (e: Exception) {
-                    playerState = PlayerState.STATE_ERROR
+                    playerState = PlayerState.Default()
                 }
                 setOnPreparedListener {
-                    playerState = PlayerState.STATE_PREPARED
+                    playerState = PlayerState.Prepared()
                     completion()
                 }
                 setOnCompletionListener {
-                    playerState = PlayerState.STATE_PREPARED
+                    playerState = PlayerState.Prepared()
                     completion()
                 }
             }
         } else {
-            playerState = PlayerState.STATE_ERROR
+            playerState = PlayerState.Default()
             completion()
         }
     }
 
     override fun play() {
         mediaPlayer.start()
-        playerState = PlayerState.STATE_PLAYING
+        playerState = PlayerState.Playing(elapsedTime())
     }
 
     override fun pause() {
-        if (playerState == PlayerState.STATE_PLAYING) {
-            mediaPlayer.pause()
-            playerState = PlayerState.STATE_PAUSED
-        } else {
-            release()
+        when (playerState) {
+            is PlayerState.Default -> {}
+            is PlayerState.Prepared -> {}
+            else -> {
+                mediaPlayer.pause()
+                playerState = PlayerState.Paused(elapsedTime())
+            }
         }
     }
 
     override fun release() {
+        mediaPlayer.stop()
         mediaPlayer.release()
-        playerState = PlayerState.STATE_DEFAULT
-    }
-
-    override fun elapsedTime(): Int {
-        return mediaPlayer.currentPosition
+        playerState = PlayerState.Default()
     }
 
     override fun playerState(): PlayerState {
-        return playerState
+        return when (playerState) {
+            is PlayerState.Default -> {
+                PlayerState.Default()
+            }
+
+            is PlayerState.Prepared -> {
+                PlayerState.Prepared()
+            }
+
+            is PlayerState.Playing -> {
+                PlayerState.Playing(elapsedTime())
+            }
+
+            is PlayerState.Paused -> {
+                PlayerState.Paused(elapsedTime())
+            }
+        }
+    }
+
+    private fun elapsedTime(): Int {
+        return mediaPlayer.currentPosition
     }
 }
