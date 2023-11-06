@@ -1,5 +1,7 @@
 package com.jar89.playlistmaker.di
 
+import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksInteractor
+import com.jar89.playlistmaker.albums.domain.impl.FavoritesTracksInteractorImpl
 import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
 import com.jar89.playlistmaker.player.domain.impl.PlayerInteractorImpl
 import com.jar89.playlistmaker.search.domain.api.TrackInteractor
@@ -26,5 +28,9 @@ val interactorModule = module {
 
     single<SharingInteractor> {
         SharingInteractorImpl(sharingRepository = get())
+    }
+
+    single<FavoritesTracksInteractor> {
+        FavoritesTracksInteractorImpl(repository = get())
     }
 }

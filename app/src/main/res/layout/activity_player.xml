@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
                 android:background="?attr/colorPrimary"
-                android:src="@drawable/ic_add_in_favorite_player_screen"
+                android:src="@drawable/ic_favorite_inactive_player_screen"
                 app:layout_constraintBottom_toBottomOf="@+id/playPauseBtn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/playPauseBtn" />

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -30,7 +31,9 @@ class PlayerActivity : AppCompatActivity() {
 
         track = intent.getParcelableExtra<Track>(EXTRA_KEY_TRACK)!!
 
-        createPlayer()
+        createPlayer(track)
+
+        checkFavoriteBtn()
 
         setTrackInfoAndAlbumImg()
 
@@ -38,9 +41,26 @@ class PlayerActivity : AppCompatActivity() {
             finish()
         }
 
+        playerViewModel.isFavorite.observe(this) {
+            renderFavoriteBtn(it)
+        }
+
         playerViewModel.playerState.observe(this) {
             renderState(it)
         }
+
+        binding.playPauseBtn.setOnClickListener {
+            playerViewModel.onPlayButtonClicked()
+        }
+
+        binding.addInFavoriteBtn.setOnClickListener {
+            playerViewModel.toggleFavorite()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        playerViewModel.onPause()
     }
 
     override fun onBackPressed() {
@@ -48,13 +68,12 @@ class PlayerActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun createPlayer() {
-        playerViewModel.createPlayer(track.previewUrl)
+    private fun createPlayer(track: Track) {
+        playerViewModel.createPlayer(track)
     }
 
-    override fun onPause() {
-        super.onPause()
-        playerViewModel.onPause()
+    private fun checkFavoriteBtn() {
+        playerViewModel.checkFavoriteBtn()
     }
 
     private fun setTrackInfoAndAlbumImg() {
@@ -105,6 +124,21 @@ class PlayerActivity : AppCompatActivity() {
         binding.progressTimeTv.text = getCurrentPosition(state.progress)
     }
 
+    private fun renderFavoriteBtn(isFavorite: Boolean) {
+        if (isFavorite) {
+            binding.addInFavoriteBtn.setImageDrawable(
+                AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.ic_favorite_active_player_screen
+                )
+            )
+        } else {
+            binding.addInFavoriteBtn.setImageDrawable(
+                AppCompatResources.getDrawable(this, R.drawable.ic_favorite_inactive_player_screen)
+            )
+        }
+    }
+
     private fun showNotReady() {
         binding.playPauseBtn.setImageResource(R.drawable.ic_play_player_screen)
         binding.playPauseBtn.alpha = 0.5f
@@ -112,9 +146,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun showPlayBtn() {
-        binding.playPauseBtn.setOnClickListener {
-            playerViewModel.onPlayButtonClicked()
-        }
         binding.playPauseBtn.setImageResource(R.drawable.ic_play_player_screen)
         binding.playPauseBtn.alpha = 1f
         binding.playPauseBtn.isEnabled = true
