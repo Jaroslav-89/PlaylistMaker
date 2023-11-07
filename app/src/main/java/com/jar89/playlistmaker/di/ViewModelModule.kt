@@ -29,7 +29,7 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { FavoritesViewModel() }
+    viewModel { FavoritesViewModel(favoritesTracksInteractor = get()) }
 
     viewModel { PlaylistViewModel() }
 }

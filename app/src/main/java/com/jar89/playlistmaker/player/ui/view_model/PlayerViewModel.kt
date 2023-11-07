@@ -8,7 +8,6 @@ import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksInteractor
 import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
 import com.jar89.playlistmaker.player.domain.model.PlayerState
 import com.jar89.playlistmaker.search.domain.model.Track
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,7 +43,7 @@ class PlayerViewModel(
     }
 
     fun checkFavoriteBtn() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             track?.trackId.let { id ->
                 favoritesTracksInteractor.checkTrackById(id!!)
                     .collect { value ->
@@ -56,7 +55,7 @@ class PlayerViewModel(
     }
 
     fun toggleFavorite() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (trackInFavorites) {
                 favoritesTracksInteractor.deleteTrack(track!!)
                 checkFavoriteBtn()
