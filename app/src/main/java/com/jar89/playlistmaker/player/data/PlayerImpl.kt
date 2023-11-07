@@ -39,9 +39,13 @@ class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
     }
 
     override fun pause() {
-        if (playerState != PlayerState.Default() && playerState != PlayerState.Prepared()) {
-            mediaPlayer.pause()
-            playerState = PlayerState.Paused(elapsedTime())
+        when (playerState) {
+            is PlayerState.Default -> {}
+            is PlayerState.Prepared -> {}
+            else -> {
+                mediaPlayer.pause()
+                playerState = PlayerState.Paused(elapsedTime())
+            }
         }
     }
 
