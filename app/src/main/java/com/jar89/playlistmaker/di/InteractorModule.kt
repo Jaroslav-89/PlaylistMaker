@@ -1,6 +1,6 @@
 package com.jar89.playlistmaker.di
 
-import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksInteractor
+import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksInteractor
 import com.jar89.playlistmaker.albums.domain.impl.FavoritesTracksInteractorImpl
 import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
 import com.jar89.playlistmaker.player.domain.impl.PlayerInteractorImpl

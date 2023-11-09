@@ -1,9 +1,9 @@
-package com.jar89.playlistmaker.albums.domain.db
+package com.jar89.playlistmaker.albums.domain.api
 
 import com.jar89.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 
-interface FavoritesTracksRepository {
+interface FavoritesTracksInteractor {
     suspend fun insertTrack(track: Track)
 
     suspend fun deleteTrack(track: Track)

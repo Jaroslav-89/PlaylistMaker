@@ -2,7 +2,7 @@ package com.jar89.playlistmaker.di
 
 import com.jar89.playlistmaker.albums.data.converters.TrackDbConvertor
 import com.jar89.playlistmaker.albums.data.repository.FavoritesTracksRepositoryImpl
-import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksRepository
+import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksRepository
 import com.jar89.playlistmaker.search.data.repository.TrackRepositoryImpl
 import com.jar89.playlistmaker.search.domain.api.TrackRepository
 import com.jar89.playlistmaker.settings.data.repository.SettingsRepositoryImpl

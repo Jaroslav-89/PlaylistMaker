@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksInteractor
+import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksInteractor
 import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
 import com.jar89.playlistmaker.player.domain.model.PlayerState
 import com.jar89.playlistmaker.search.domain.model.Track
@@ -37,15 +37,15 @@ class PlayerViewModel(
 
     fun createPlayer(newTrack: Track) {
         track = newTrack
-        playerInteractor.createPlayer(track!!.previewUrl) {
+        playerInteractor.createPlayer(track?.previewUrl) {
             _playerState.postValue(playerInteractor.getPlayerState())
         }
     }
 
     fun checkFavoriteBtn() {
         viewModelScope.launch {
-            track?.trackId.let { id ->
-                favoritesTracksInteractor.checkTrackById(id!!)
+            track?.trackId?.let { id ->
+                favoritesTracksInteractor.checkTrackById(id)
                     .collect { value ->
                         trackInFavorites = value
                         _isFavorite.postValue(trackInFavorites)
@@ -56,12 +56,14 @@ class PlayerViewModel(
 
     fun toggleFavorite() {
         viewModelScope.launch {
-            if (trackInFavorites) {
-                favoritesTracksInteractor.deleteTrack(track!!)
-                checkFavoriteBtn()
-            } else {
-                favoritesTracksInteractor.insertTrack(track!!)
-                checkFavoriteBtn()
+            track?.let { track ->
+                if (trackInFavorites) {
+                    favoritesTracksInteractor.deleteTrack(track)
+                    checkFavoriteBtn()
+                } else {
+                    favoritesTracksInteractor.insertTrack(track)
+                    checkFavoriteBtn()
+                }
             }
         }
     }

@@ -168,7 +168,9 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.clearTextIv.visibility = clearButtonVisibility(s)
-                if (s != null) {
+                if (s.isNullOrEmpty()) {
+                    searchViewModel.showHistory()
+                } else {
                     search()
                 }
             }

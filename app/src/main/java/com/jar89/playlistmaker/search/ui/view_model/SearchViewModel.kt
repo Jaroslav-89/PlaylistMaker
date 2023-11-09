@@ -85,6 +85,7 @@ class SearchViewModel(
 
     private fun processResult(foundTracks: List<Track>?, errorMessage: ErrorType?) {
         if (foundTracks != null) {
+            tracks.clear()
             tracks.addAll(foundTracks)
         }
 
