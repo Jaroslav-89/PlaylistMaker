@@ -17,7 +17,8 @@ val viewModelModule = module {
 
     viewModel {
         PlayerViewModel(
-            playerInteractor = get()
+            playerInteractor = get(),
+            favoritesTracksInteractor = get()
         )
     }
 
@@ -28,7 +29,7 @@ val viewModelModule = module {
         )
     }
 
-    viewModel { FavoritesViewModel() }
+    viewModel { FavoritesViewModel(favoritesTracksInteractor = get()) }
 
     viewModel { PlaylistViewModel() }
 }

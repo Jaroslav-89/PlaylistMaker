@@ -2,7 +2,9 @@ package com.jar89.playlistmaker.di
 
 import android.content.Context
 import android.media.MediaPlayer
+import androidx.room.Room
 import com.google.gson.Gson
+import com.jar89.playlistmaker.albums.data.db.AppDatabase
 import com.jar89.playlistmaker.player.data.PlayerImpl
 import com.jar89.playlistmaker.player.domain.api.Player
 import com.jar89.playlistmaker.search.data.mappers.TrackListMapper
@@ -67,5 +69,11 @@ val dataModule = module {
     //Settings
     single {
         ExternalNavigator(context = androidContext())
+    }
+
+    //Albums
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .build()
     }
 }

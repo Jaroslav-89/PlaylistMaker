@@ -10,7 +10,7 @@ class TrackListMapper {
     }
 
     fun mapDtoToEntity(dtoTrack: TrackDto) = Track(
-                dtoTrack.trackId ?: EMPTY_STRING,
+                dtoTrack.trackId,
                 dtoTrack.trackName ?: EMPTY_STRING,
                 dtoTrack.artistName ?: EMPTY_STRING,
                 dtoTrack.trackTimeMillis ?: 0,
@@ -24,7 +24,7 @@ class TrackListMapper {
 
 
     fun mapEntityToDto(track: Track) = TrackDto(
-        trackId = track.trackId ?: EMPTY_STRING,
+        trackId = track.trackId,
         trackName = track.trackName ?: EMPTY_STRING,
         artistName = track.artistName ?: EMPTY_STRING,
         trackTimeMillis = track.trackTimeMillis ?: 0,
@@ -40,7 +40,7 @@ class TrackListMapper {
         val trackList = mutableListOf<Track>()
         for (dtoTrack in dtoTrackList) {
             val track = Track(
-                dtoTrack.trackId ?: EMPTY_STRING,
+                dtoTrack.trackId,
                 dtoTrack.trackName ?: EMPTY_STRING,
                 dtoTrack.artistName ?: EMPTY_STRING,
                 dtoTrack.trackTimeMillis ?: 0,

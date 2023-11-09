@@ -1,4 +1,4 @@
-package com.jar89.playlistmaker.player.ui.view_model
+package com.jar89.playlistmaker.player.domain.model
 
 sealed class PlayerState(
     val isPlayButtonEnabled: Boolean,
