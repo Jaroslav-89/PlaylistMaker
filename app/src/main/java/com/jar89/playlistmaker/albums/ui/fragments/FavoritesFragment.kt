@@ -1,16 +1,17 @@
 package com.jar89.playlistmaker.albums.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.albums.ui.view_model.FavoritesState
 import com.jar89.playlistmaker.albums.ui.view_model.FavoritesViewModel
 import com.jar89.playlistmaker.databinding.FragmentFavoritesBinding
-import com.jar89.playlistmaker.player.ui.activity.PlayerActivity
+import com.jar89.playlistmaker.player.ui.activity.PlayerFragment
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
 import com.jar89.playlistmaker.util.debounce
@@ -66,9 +67,10 @@ class FavoritesFragment : Fragment(), TracksAdapter.TrackClickListener {
 
     override fun onTrackClick(track: Track) {
         if (clickDebounce()) {
-            val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
-            playerIntent.putExtra(PlayerActivity.EXTRA_KEY_TRACK, track)
-            startActivity(playerIntent)
+            findNavController().navigate(
+                R.id.action_albumsFragment_to_playerFragment,
+                PlayerFragment.createArgs(track)
+            )
         }
     }
 
