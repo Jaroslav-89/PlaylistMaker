@@ -2,77 +2,81 @@ package com.jar89.playlistmaker.player.data
 
 import android.media.MediaPlayer
 import com.jar89.playlistmaker.player.domain.api.Player
-import com.jar89.playlistmaker.player.domain.model.PlayerState
+import com.jar89.playlistmaker.player.domain.model.GeneralPlayerState
 
 class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 
-    private lateinit var playerState: PlayerState
+    private lateinit var playerState: GeneralPlayerState
 
     override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
-        playerState = PlayerState.Default()
+        playerState = GeneralPlayerState.PlayerState.Default
         if (trackUrl != null) {
             with(mediaPlayer) {
                 try {
                     setDataSource(trackUrl)
                     prepareAsync()
                 } catch (e: Exception) {
-                    playerState = PlayerState.Default()
+                    playerState = GeneralPlayerState.PlayerState.Default
                 }
                 setOnPreparedListener {
-                    playerState = PlayerState.Prepared()
+                    playerState = GeneralPlayerState.PlayerState.Prepared
                     completion()
                 }
                 setOnCompletionListener {
-                    playerState = PlayerState.Prepared()
+                    playerState = GeneralPlayerState.PlayerState.Prepared
                     completion()
                 }
             }
         } else {
-            playerState = PlayerState.Default()
+            playerState = GeneralPlayerState.PlayerState.Default
             completion()
         }
     }
 
     override fun play() {
         mediaPlayer.start()
-        playerState = PlayerState.Playing(elapsedTime())
+        playerState = GeneralPlayerState.PlayerState.Playing(elapsedTime())
     }
 
     override fun pause() {
         when (playerState) {
-            is PlayerState.Default -> {}
-            is PlayerState.Prepared -> {}
+            is GeneralPlayerState.PlayerState.Default -> {}
+            is GeneralPlayerState.PlayerState.Prepared -> {}
             else -> {
                 mediaPlayer.pause()
-                playerState = PlayerState.Paused(elapsedTime())
+                playerState = GeneralPlayerState.PlayerState.Paused(elapsedTime())
             }
         }
     }
 
     override fun release() {
-        if (playerState != PlayerState.Default()) {
+        if (playerState != GeneralPlayerState.PlayerState.Default) {
             mediaPlayer.stop()
             mediaPlayer.release()
-            playerState = PlayerState.Default()
+            playerState = GeneralPlayerState.PlayerState.Default
         }
     }
 
-    override fun playerState(): PlayerState {
+    override fun playerState(): GeneralPlayerState {
         return when (playerState) {
-            is PlayerState.Default -> {
-                PlayerState.Default()
+            is GeneralPlayerState.PlayerState.Default -> {
+                GeneralPlayerState.PlayerState.Default
             }
 
-            is PlayerState.Prepared -> {
-                PlayerState.Prepared()
+            is GeneralPlayerState.PlayerState.Prepared -> {
+                GeneralPlayerState.PlayerState.Prepared
             }
 
-            is PlayerState.Playing -> {
-                PlayerState.Playing(elapsedTime())
+            is GeneralPlayerState.PlayerState.Playing -> {
+                GeneralPlayerState.PlayerState.Playing(elapsedTime())
             }
 
-            is PlayerState.Paused -> {
-                PlayerState.Paused(elapsedTime())
+            is GeneralPlayerState.PlayerState.Paused -> {
+                GeneralPlayerState.PlayerState.Paused(elapsedTime())
+            }
+
+            else -> {
+                GeneralPlayerState.PlayerState.Default
             }
         }
     }

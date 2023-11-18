@@ -1,5 +1,6 @@
 package com.jar89.playlistmaker.albums.data.converters
 
+import com.jar89.playlistmaker.albums.data.db.entity.PlaylistTrackEntity
 import com.jar89.playlistmaker.albums.data.db.entity.TrackEntity
 import com.jar89.playlistmaker.search.domain.model.Track
 
@@ -32,6 +33,21 @@ class TrackDbConvertor {
             entity.primaryGenreName,
             entity.country,
             entity.previewUrl
+        )
+    }
+
+    fun mapTrackToPlaylistTrackEntity(track: Track): PlaylistTrackEntity {
+        return PlaylistTrackEntity(
+            track.trackId.toInt(),
+            track.trackName,
+            track.artistName,
+            track.trackTimeMillis,
+            track.artworkUrl100,
+            track.collectionName,
+            track.releaseDate,
+            track.primaryGenreName,
+            track.country,
+            track.previewUrl,
         )
     }
 }

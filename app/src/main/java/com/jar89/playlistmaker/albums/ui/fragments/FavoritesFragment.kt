@@ -11,7 +11,7 @@ import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.albums.ui.view_model.FavoritesState
 import com.jar89.playlistmaker.albums.ui.view_model.FavoritesViewModel
 import com.jar89.playlistmaker.databinding.FragmentFavoritesBinding
-import com.jar89.playlistmaker.player.ui.activity.PlayerFragment
+import com.jar89.playlistmaker.player.ui.fragment.PlayerFragment
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
 import com.jar89.playlistmaker.util.debounce

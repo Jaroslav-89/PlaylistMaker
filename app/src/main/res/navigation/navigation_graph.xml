@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_albumsFragment_to_playerFragment"
             app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_albumsFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -29,7 +32,15 @@
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/playerFragment"
-        android:name="com.jar89.playlistmaker.player.ui.activity.PlayerFragment"
+        android:name="com.jar89.playlistmaker.player.ui.fragment.PlayerFragment"
         android:label="fragment_player"
-        tools:layout="@layout/fragment_player" />
+        tools:layout="@layout/fragment_player" >
+        <action
+            android:id="@+id/action_playerFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.jar89.playlistmaker.albums.ui.fragments.CreatePlaylistFragment"
+        android:label="CreatePlaylistFragment" />
 </navigation>

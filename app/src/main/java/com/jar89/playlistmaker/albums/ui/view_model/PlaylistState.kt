@@ -1,10 +1,8 @@
 package com.jar89.playlistmaker.albums.ui.view_model
 
-import com.jar89.playlistmaker.albums.domain.model.PlayList
+import com.jar89.playlistmaker.albums.domain.model.Playlist
 
-sealed class PlaylistState {
-    object NOTHING_TO_SHOW : PlaylistState()
-    object LOADING : PlaylistState()
-    data class ERROR(val message: String) : PlaylistState()
-    data class PLAYLISTS(val playlists: List<PlayList>) : PlaylistState()
+sealed interface PlaylistState {
+    data object Empty : PlaylistState
+    data class Content(val playlists: List<Playlist>) : PlaylistState
 }

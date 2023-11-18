@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.FragmentSearchBinding
-import com.jar89.playlistmaker.player.ui.activity.PlayerFragment
+import com.jar89.playlistmaker.player.ui.fragment.PlayerFragment
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.search.ui.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter

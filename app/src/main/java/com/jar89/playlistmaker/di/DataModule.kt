@@ -4,6 +4,8 @@ import android.content.Context
 import android.media.MediaPlayer
 import androidx.room.Room
 import com.google.gson.Gson
+import com.jar89.playlistmaker.albums.data.converters.PlaylistDbConvertor
+import com.jar89.playlistmaker.albums.data.converters.TrackDbConvertor
 import com.jar89.playlistmaker.albums.data.db.AppDatabase
 import com.jar89.playlistmaker.player.data.PlayerImpl
 import com.jar89.playlistmaker.player.domain.api.Player
@@ -74,6 +76,15 @@ val dataModule = module {
     //Albums
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .fallbackToDestructiveMigration()
             .build()
+    }
+
+    factory {
+        PlaylistDbConvertor()
+    }
+
+    factory {
+        TrackDbConvertor()
     }
 }

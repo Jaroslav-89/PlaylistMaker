@@ -1,29 +1,37 @@
-package com.jar89.playlistmaker.player.ui.activity
+package com.jar89.playlistmaker.player.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.FragmentPlayerBinding
-import com.jar89.playlistmaker.player.domain.model.PlayerState
+import com.jar89.playlistmaker.player.domain.model.GeneralPlayerState
+import com.jar89.playlistmaker.player.ui.fragment.adapter.BottomSheetPlaylistsAdapter
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.jar89.playlistmaker.search.domain.model.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.abs
 
 class PlayerFragment : Fragment() {
 
     private lateinit var binding: FragmentPlayerBinding
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var adapter: BottomSheetPlaylistsAdapter
     private var track: Track? = null
 
     private val playerViewModel: PlayerViewModel by viewModel()
@@ -45,28 +53,18 @@ class PlayerFragment : Fragment() {
 
         createPlayer(track)
 
+        setPlaylistsRv()
+
+        setBottomSheet()
+
         checkFavoriteBtn()
 
         setTrackInfoAndAlbumImg(track)
 
-        binding.backBtn.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        setClickListeners()
 
-        playerViewModel.isFavorite.observe(viewLifecycleOwner) {
-            renderFavoriteBtn(it)
-        }
-
-        playerViewModel.playerState.observe(viewLifecycleOwner) {
+        playerViewModel.generalPlayerState.observe(viewLifecycleOwner) {
             renderState(it)
-        }
-
-        binding.playPauseBtn.setOnClickListener {
-            playerViewModel.onPlayButtonClicked()
-        }
-
-        binding.addInFavoriteBtn.setOnClickListener {
-            playerViewModel.toggleFavorite()
         }
     }
 
@@ -79,6 +77,64 @@ class PlayerFragment : Fragment() {
         if (track != null) {
             playerViewModel.createPlayer(track)
         }
+    }
+
+    private fun setClickListeners() {
+        binding.backBtn.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.addInAlbumBtn.setOnClickListener {
+            playerViewModel.getAllPlaylists()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.playPauseBtn.setOnClickListener {
+            playerViewModel.onPlayButtonClicked()
+        }
+
+        binding.addInFavoriteBtn.setOnClickListener {
+            playerViewModel.toggleFavorite()
+        }
+
+        binding.createPlaylistBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_createPlaylistFragment)
+        }
+    }
+
+    private fun setPlaylistsRv() {
+        adapter = BottomSheetPlaylistsAdapter { playlist ->
+            playerViewModel.addTrackToPlaylist(playlist)
+        }
+
+        binding.playlistsRv.layoutManager = LinearLayoutManager(requireContext())
+        binding.playlistsRv.adapter = adapter
+    }
+
+    private fun setBottomSheet() {
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                    }
+
+                    else -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = 1 - abs(slideOffset)
+            }
+        })
     }
 
     private fun checkFavoriteBtn() {
@@ -124,36 +180,70 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    private fun renderState(state: PlayerState) {
-        if (state.buttonIsPlay) {
-            showPlayBtn()
-        } else {
-            showPauseBtn()
-        }
+    private fun renderState(state: GeneralPlayerState) {
+        when (state) {
+            is GeneralPlayerState.PlayerState -> {
+                if (state.buttonIsPlay) {
+                    showPlayBtn()
+                } else {
+                    showPauseBtn()
+                }
 
-        if (!state.isPlayButtonEnabled) {
-            showNotReady()
-        }
+                if (!state.isPlayButtonEnabled) {
+                    showNotReady()
+                }
 
-        binding.progressTimeTv.text = getCurrentPosition(state.progress)
+                binding.progressTimeTv.text = getCurrentPosition(state.progress)
+            }
+
+            is GeneralPlayerState.FavoriteState -> {
+                if (state.isFavorite) {
+                    binding.addInFavoriteBtn.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_favorite_active_player_screen
+                        )
+                    )
+                } else {
+                    binding.addInFavoriteBtn.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_favorite_inactive_player_screen
+                        )
+                    )
+                }
+            }
+
+            is GeneralPlayerState.PlaylistsState -> {
+                when (state) {
+                    is GeneralPlayerState.PlaylistsState.AlreadyAdded -> showToast(
+                        getString(
+                            R.string.track_already_added,
+                            state.playlistName
+                        )
+                    )
+
+                    is GeneralPlayerState.PlaylistsState.WasAdded -> showTrackAdded(state.playlistName)
+                    is GeneralPlayerState.PlaylistsState.ShowPlaylists -> {
+                        adapter.setPlaylists(state.playlists)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        }
     }
 
-    private fun renderFavoriteBtn(isFavorite: Boolean) {
-        if (isFavorite) {
-            binding.addInFavoriteBtn.setImageDrawable(
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_favorite_active_player_screen
-                )
-            )
-        } else {
-            binding.addInFavoriteBtn.setImageDrawable(
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_favorite_inactive_player_screen
-                )
-            )
-        }
+    private fun showToast(message: String) {
+        Toast.makeText(
+            requireContext(),
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun showTrackAdded(playlistName: String) {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        showToast(getString(R.string.track_added_in_playlist, playlistName))
     }
 
     private fun showNotReady() {

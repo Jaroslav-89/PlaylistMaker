@@ -2,7 +2,7 @@ package com.jar89.playlistmaker.albums.ui.view_model
 
 import com.jar89.playlistmaker.search.domain.model.Track
 
-sealed class FavoritesState {
-    data object Empty : FavoritesState()
-    data class Content(val favorites: List<Track>) : FavoritesState()
+sealed interface FavoritesState {
+    data object Empty : FavoritesState
+    data class Content(val favorites: List<Track>) : FavoritesState
 }

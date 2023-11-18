@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/trackNameTv"
-            style="@style/SearchActivityTrackName"
+            style="@style/TrackNameTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Yesterday (Remastered 2009)" />
@@ -41,7 +41,7 @@
 
             <TextView
                 android:id="@+id/artistNameTv"
-                style="@style/SearchActivityTrackArtistAndTime"
+                style="@style/TrackArtistAndTimeTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -58,7 +58,7 @@
 
             <TextView
                 android:id="@+id/trackTimeTv"
-                style="@style/SearchActivityTrackArtistAndTime"
+                style="@style/TrackArtistAndTimeTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
