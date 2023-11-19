@@ -2,81 +2,71 @@ package com.jar89.playlistmaker.player.data
 
 import android.media.MediaPlayer
 import com.jar89.playlistmaker.player.domain.api.Player
-import com.jar89.playlistmaker.player.domain.model.GeneralPlayerState
+import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 
 class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 
-    private lateinit var playerState: GeneralPlayerState
+    private var playerState: PlayerState = PlayerState.Default
 
-    override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
-        playerState = GeneralPlayerState.PlayerState.Default
-        if (trackUrl != null) {
-            with(mediaPlayer) {
-                try {
-                    setDataSource(trackUrl)
-                    prepareAsync()
-                } catch (e: Exception) {
-                    playerState = GeneralPlayerState.PlayerState.Default
-                }
-                setOnPreparedListener {
-                    playerState = GeneralPlayerState.PlayerState.Prepared
-                    completion()
-                }
-                setOnCompletionListener {
-                    playerState = GeneralPlayerState.PlayerState.Prepared
-                    completion()
-                }
+    override fun createPlayer(trackUrl: String, completion: () -> Unit) {
+        with(mediaPlayer) {
+            try {
+                setDataSource(trackUrl)
+                prepareAsync()
+            } catch (e: Exception) {
+                playerState = PlayerState.Default
             }
-        } else {
-            playerState = GeneralPlayerState.PlayerState.Default
-            completion()
+            setOnPreparedListener {
+                playerState = PlayerState.Prepared
+                completion()
+            }
+            setOnCompletionListener {
+                playerState = PlayerState.Prepared
+                completion()
+            }
         }
     }
 
     override fun play() {
         mediaPlayer.start()
-        playerState = GeneralPlayerState.PlayerState.Playing(elapsedTime())
+        playerState = PlayerState.Playing(elapsedTime())
     }
 
     override fun pause() {
         when (playerState) {
-            is GeneralPlayerState.PlayerState.Default -> {}
-            is GeneralPlayerState.PlayerState.Prepared -> {}
+            is PlayerState.Default -> {}
+            is PlayerState.Prepared -> {}
             else -> {
                 mediaPlayer.pause()
-                playerState = GeneralPlayerState.PlayerState.Paused(elapsedTime())
+                playerState = PlayerState.Paused(elapsedTime())
             }
         }
     }
 
     override fun release() {
-        if (playerState != GeneralPlayerState.PlayerState.Default) {
+        if (playerState != PlayerState.Default) {
             mediaPlayer.stop()
             mediaPlayer.release()
-            playerState = GeneralPlayerState.PlayerState.Default
+            playerState = PlayerState.Default
         }
     }
 
-    override fun playerState(): GeneralPlayerState {
+    override fun playerState(): PlayerState {
         return when (playerState) {
-            is GeneralPlayerState.PlayerState.Default -> {
-                GeneralPlayerState.PlayerState.Default
+            is PlayerState.Default -> {
+                PlayerState.Default
             }
 
-            is GeneralPlayerState.PlayerState.Prepared -> {
-                GeneralPlayerState.PlayerState.Prepared
+            is PlayerState.Prepared -> {
+                PlayerState.Prepared
             }
 
-            is GeneralPlayerState.PlayerState.Playing -> {
-                GeneralPlayerState.PlayerState.Playing(elapsedTime())
+            is PlayerState.Playing -> {
+                PlayerState.Playing(elapsedTime())
             }
 
-            is GeneralPlayerState.PlayerState.Paused -> {
-                GeneralPlayerState.PlayerState.Paused(elapsedTime())
-            }
-
-            else -> {
-                GeneralPlayerState.PlayerState.Default
+            is PlayerState.Paused -> {
+                PlayerState.Paused(elapsedTime())
             }
         }
     }

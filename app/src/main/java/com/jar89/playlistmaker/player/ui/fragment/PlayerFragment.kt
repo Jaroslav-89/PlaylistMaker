@@ -18,11 +18,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.FragmentPlayerBinding
-import com.jar89.playlistmaker.player.domain.model.GeneralPlayerState
 import com.jar89.playlistmaker.player.ui.fragment.adapter.BottomSheetPlaylistsAdapter
+import com.jar89.playlistmaker.player.ui.view_model.FavoriteState
+import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
+import com.jar89.playlistmaker.player.ui.view_model.PlaylistsState
 import com.jar89.playlistmaker.search.domain.model.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.abs
@@ -32,9 +35,11 @@ class PlayerFragment : Fragment() {
     private lateinit var binding: FragmentPlayerBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var adapter: BottomSheetPlaylistsAdapter
-    private var track: Track? = null
+    private lateinit var track: Track
 
-    private val playerViewModel: PlayerViewModel by viewModel()
+    private val playerViewModel: PlayerViewModel by viewModel {
+        parametersOf(track)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,13 +50,12 @@ class PlayerFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        track = requireArguments().getParcelable(ARGS_TRACK)
-
-        createPlayer(track)
+        requireArguments().let {
+            track = it.getParcelable(ARGS_TRACK)!!
+        }
 
         setPlaylistsRv()
 
@@ -63,20 +67,22 @@ class PlayerFragment : Fragment() {
 
         setClickListeners()
 
-        playerViewModel.generalPlayerState.observe(viewLifecycleOwner) {
-            renderState(it)
+        playerViewModel.playerState.observe(viewLifecycleOwner) {
+            renderPlayerState(it)
+        }
+
+        playerViewModel.isFavorite.observe(viewLifecycleOwner) {
+            renderFavoriteState(it)
+        }
+
+        playerViewModel.playlistsState.observe(viewLifecycleOwner) {
+            renderPlaylistsState(it)
         }
     }
 
     override fun onPause() {
         super.onPause()
         playerViewModel.onPause()
-    }
-
-    private fun createPlayer(track: Track?) {
-        if (track != null) {
-            playerViewModel.createPlayer(track)
-        }
     }
 
     private fun setClickListeners() {
@@ -180,55 +186,51 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    private fun renderState(state: GeneralPlayerState) {
+    private fun renderPlayerState(state: PlayerState) {
+        if (state.buttonIsPlay) {
+            showPlayBtn()
+        } else {
+            showPauseBtn()
+        }
+
+        if (!state.isPlayButtonEnabled) {
+            showNotReady()
+        }
+
+        binding.progressTimeTv.text = getCurrentPosition(state.progress)
+    }
+
+    private fun renderFavoriteState(state: FavoriteState) {
+        if (state.isFavorite) {
+            binding.addInFavoriteBtn.setImageDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_favorite_active_player_screen
+                )
+            )
+        } else {
+            binding.addInFavoriteBtn.setImageDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_favorite_inactive_player_screen
+                )
+            )
+        }
+    }
+
+    private fun renderPlaylistsState(state: PlaylistsState) {
         when (state) {
-            is GeneralPlayerState.PlayerState -> {
-                if (state.buttonIsPlay) {
-                    showPlayBtn()
-                } else {
-                    showPauseBtn()
-                }
+            is PlaylistsState.AlreadyAdded -> showToast(
+                getString(
+                    R.string.track_already_added,
+                    state.playlistName
+                )
+            )
 
-                if (!state.isPlayButtonEnabled) {
-                    showNotReady()
-                }
-
-                binding.progressTimeTv.text = getCurrentPosition(state.progress)
-            }
-
-            is GeneralPlayerState.FavoriteState -> {
-                if (state.isFavorite) {
-                    binding.addInFavoriteBtn.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            requireContext(),
-                            R.drawable.ic_favorite_active_player_screen
-                        )
-                    )
-                } else {
-                    binding.addInFavoriteBtn.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            requireContext(),
-                            R.drawable.ic_favorite_inactive_player_screen
-                        )
-                    )
-                }
-            }
-
-            is GeneralPlayerState.PlaylistsState -> {
-                when (state) {
-                    is GeneralPlayerState.PlaylistsState.AlreadyAdded -> showToast(
-                        getString(
-                            R.string.track_already_added,
-                            state.playlistName
-                        )
-                    )
-
-                    is GeneralPlayerState.PlaylistsState.WasAdded -> showTrackAdded(state.playlistName)
-                    is GeneralPlayerState.PlaylistsState.ShowPlaylists -> {
-                        adapter.setPlaylists(state.playlists)
-                        adapter.notifyDataSetChanged()
-                    }
-                }
+            is PlaylistsState.WasAdded -> showTrackAdded(state.playlistName)
+            is PlaylistsState.ShowPlaylists -> {
+                adapter.setPlaylists(state.playlists)
+                adapter.notifyDataSetChanged()
             }
         }
     }

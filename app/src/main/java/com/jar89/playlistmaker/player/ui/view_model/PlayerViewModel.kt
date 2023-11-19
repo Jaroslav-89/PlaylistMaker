@@ -8,46 +8,52 @@ import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksInteractor
 import com.jar89.playlistmaker.albums.domain.api.PlaylistInteractor
 import com.jar89.playlistmaker.albums.domain.model.Playlist
 import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
-import com.jar89.playlistmaker.player.domain.model.GeneralPlayerState
 import com.jar89.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
+    private val track: Track,
     private val playerInteractor: PlayerInteractor,
     private val favoritesTracksInteractor: FavoritesTracksInteractor,
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private var timerJob: Job? = null
-    private lateinit var track: Track
     private var trackInFavorites = false
-    private val _generalPlayerState = MutableLiveData<GeneralPlayerState>()
-    private val _isFavorite = MutableLiveData<GeneralPlayerState>()
 
-    val generalPlayerState: LiveData<GeneralPlayerState>
-        get() = _generalPlayerState
+    private val _playerState = MutableLiveData<PlayerState>()
+    val playerState: LiveData<PlayerState>
+        get() = _playerState
+
+    private val _isFavorite = MutableLiveData<FavoriteState>()
+    val isFavorite: LiveData<FavoriteState>
+        get() = _isFavorite
+
+    private val _playlistsState = MutableLiveData<PlaylistsState>()
+    val playlistsState: LiveData<PlaylistsState>
+        get() = _playlistsState
+
+    init {
+        track.previewUrl?.let {
+            playerInteractor.createPlayer(it) {
+                _playerState.postValue(playerInteractor.getPlayerState())
+            }
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
         playerInteractor.release()
     }
 
-    fun createPlayer(newTrack: Track) {
-        track = newTrack
-        _generalPlayerState.postValue(GeneralPlayerState.PlayerState.Default)
-        playerInteractor.createPlayer(track.previewUrl) {
-            _generalPlayerState.postValue(playerInteractor.getPlayerState())
-        }
-    }
-
     fun checkFavoriteBtn() {
         viewModelScope.launch {
-            favoritesTracksInteractor.checkTrackById(track.trackId)
+            favoritesTracksInteractor.checkTrackById(track!!.trackId)
                 .collect { value ->
                     trackInFavorites = value
-                    _generalPlayerState.postValue(GeneralPlayerState.FavoriteState(trackInFavorites))
+                    _isFavorite.postValue(FavoriteState(trackInFavorites))
                 }
         }
     }
@@ -55,45 +61,49 @@ class PlayerViewModel(
     fun toggleFavorite() {
         viewModelScope.launch {
             if (trackInFavorites) {
-                favoritesTracksInteractor.deleteTrack(track)
+                favoritesTracksInteractor.deleteTrack(track!!)
                 checkFavoriteBtn()
             } else {
-                favoritesTracksInteractor.insertTrack(track)
+                favoritesTracksInteractor.insertTrack(track!!)
                 checkFavoriteBtn()
             }
         }
     }
 
     fun onPlayButtonClicked() {
-        when (_generalPlayerState.value) {
-            is GeneralPlayerState.PlayerState.Playing -> {
+        when (_playerState.value) {
+            is PlayerState.Playing -> {
                 onPause()
             }
 
-            is GeneralPlayerState.PlayerState.Prepared, is GeneralPlayerState.PlayerState.Paused -> {
+            is PlayerState.Prepared, is PlayerState.Paused -> {
                 startPlayer()
             }
 
-            else -> {}
+            is PlayerState.Default -> {
+            }
+
+            else -> {
+            }
         }
     }
 
     fun getAllPlaylists() {
         viewModelScope.launch {
             playlistInteractor.getAllPlaylists().collect {
-                _generalPlayerState.postValue(GeneralPlayerState.PlaylistsState.ShowPlaylists(it))
+                _playlistsState.postValue(PlaylistsState.ShowPlaylists(it))
             }
         }
     }
 
     fun addTrackToPlaylist(playlist: Playlist) {
-        if (playlist.tracksId.contains(track.trackId.toInt())) {
-            _generalPlayerState.value =
-                GeneralPlayerState.PlaylistsState.AlreadyAdded(playlist.name)
+        if (playlist.tracksId.contains(track!!.trackId.toInt())) {
+            _playlistsState.value =
+                PlaylistsState.AlreadyAdded(playlist.name)
         } else {
             viewModelScope.launch {
-                playlistInteractor.addTrackToPlaylist(track, playlist)
-                _generalPlayerState.postValue(GeneralPlayerState.PlaylistsState.WasAdded(playlist.name))
+                playlistInteractor.addTrackToPlaylist(track!!, playlist)
+                _playlistsState.postValue(PlaylistsState.WasAdded(playlist.name))
             }
         }
     }
@@ -103,14 +113,14 @@ class PlayerViewModel(
         timerJob = viewModelScope.launch {
             while (true) {
                 delay(UPDATE_DELAY)
-                _generalPlayerState.postValue(playerInteractor.getPlayerState())
+                _playerState.postValue(playerInteractor.getPlayerState())
             }
         }
     }
 
     fun onPause() {
         playerInteractor.pause()
-        _generalPlayerState.postValue(playerInteractor.getPlayerState())
+        _playerState.postValue(playerInteractor.getPlayerState())
         timerJob?.cancel()
     }
 

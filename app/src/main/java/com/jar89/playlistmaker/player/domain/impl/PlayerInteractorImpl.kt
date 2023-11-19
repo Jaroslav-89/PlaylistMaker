@@ -2,10 +2,10 @@ package com.jar89.playlistmaker.player.domain.impl
 
 import com.jar89.playlistmaker.player.domain.api.Player
 import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
-import com.jar89.playlistmaker.player.domain.model.GeneralPlayerState
+import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 
 class PlayerInteractorImpl(private val player: Player) : PlayerInteractor {
-    override fun createPlayer(trackUrl: String?, completion: () -> Unit) {
+    override fun createPlayer(trackUrl: String, completion: () -> Unit) {
         player.createPlayer(trackUrl, completion)
     }
 
@@ -21,7 +21,7 @@ class PlayerInteractorImpl(private val player: Player) : PlayerInteractor {
         player.release()
     }
 
-    override fun getPlayerState(): GeneralPlayerState {
+    override fun getPlayerState(): PlayerState {
         return player.playerState()
     }
 }
