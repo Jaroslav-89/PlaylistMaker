@@ -1,7 +1,6 @@
 package com.jar89.playlistmaker.search.ui.fragment
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,10 +10,10 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.FragmentSearchBinding
-import com.jar89.playlistmaker.player.ui.activity.PlayerActivity
-import com.jar89.playlistmaker.player.ui.activity.PlayerActivity.Companion.EXTRA_KEY_TRACK
+import com.jar89.playlistmaker.player.ui.fragment.PlayerFragment
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.search.ui.adapters.SearchHistoryAdapter
 import com.jar89.playlistmaker.search.ui.adapters.TracksAdapter
@@ -168,7 +167,9 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.clearTextIv.visibility = clearButtonVisibility(s)
-                if (s != null) {
+                if (s.isNullOrEmpty()) {
+                    searchViewModel.showHistory()
+                } else {
                     search()
                 }
             }
@@ -242,9 +243,10 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         if (clickDebounce()) {
             searchViewModel.saveTrack(track)
 
-            val playerIntent = Intent(requireContext(), PlayerActivity::class.java)
-            playerIntent.putExtra(EXTRA_KEY_TRACK, track)
-            startActivity(playerIntent)
+            findNavController().navigate(
+                R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(track)
+            )
         }
     }
 

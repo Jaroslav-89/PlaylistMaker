@@ -1,7 +1,7 @@
 package com.jar89.playlistmaker.albums.domain.impl
 
-import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksInteractor
-import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksRepository
+import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksInteractor
+import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksRepository
 import com.jar89.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 

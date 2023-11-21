@@ -4,7 +4,7 @@
     <string name="search_btn">Поиск</string>
     <string name="albums_btn">Медиатека</string>
     <string name="settings_btn">Настройки</string>
-    <!--    search activity-->
+    <!--    search fragment-->
     <string name="header_search_activity">Поиск</string>
     <string name="search_hint_search_activity">Поиск</string>
     <string name="search_bar_search_activity">Поиск</string>
@@ -15,7 +15,7 @@
     <string name="place_holder_text_internet_throwable">Проблемы со связью\n\nЗагрузка не удалась. Проверьте\nподключение к интернету</string>
     <string name="place_holder_text_search_history">Вы искали</string>
     <string name="clear_search_history_button_search_activity">Очистить историю</string>
-    <!--    settings activity-->
+    <!--    settings fragment-->
     <string name="settings_tv">Настройки</string>
     <string name="night_tv">Темная тема</string>
     <string name="share_tv">Поделиться приложением</string>
@@ -26,7 +26,7 @@
     <string name="email_support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="email_support_message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="user_agreement_url">https://yandex.ru/legal/practicum_offer/</string>
-    <!--    player activity-->
+    <!--    player fragment-->
     <string name="duration">Длительность</string>
     <string name="album">Альбом</string>
     <string name="year">Год</string>
@@ -34,11 +34,25 @@
     <string name="country">Страна</string>
     <string name="start_time">00:00</string>
     <string name="error_loading_preview">Не удалось загрузить трек</string>
-    <!--    album activity-->
+    <string name="add_to_playlist_header">Добавить в плейлист</string>
+    <string name="new_playlist_btn">Новый плейлист</string>
+    <string name="track_already_added">Трек уже добавлен в плейлист %1$s</string>
+    <string name="track_added_in_playlist">Добавлено в плейлист %1$s</string>
+    <!--    album fragment-->
     <string name="header_album_activity">Медиатека</string>
     <string name="create_new_album_btn_album_activity">Новый плейлист</string>
     <string name="favorite_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
     <string name="no_playlists">Вы не создали \nни одного плейлиста</string>
     <string name="empty_library">Ваша медиатека пуста</string>
+    <!--    playlist fragment-->
+    <string name="header_playlist_fragment">Новый плейлист</string>
+    <string name="hint_title">Название*</string>
+    <string name="hint_description">Описание</string>
+    <string name="label_create">Создать</string>
+    <string name="playlist_create">Плейлист %1$s создан</string>
+    <string name="finish_creating_dialog_title">Завершить создание плейлиста?</string>
+    <string name="finish_creating_dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="finish_creating_dialog_btn_positive">Завершить</string>
+    <string name="finish_creating_dialog_btn_negative">Отмена</string>
 </resources>

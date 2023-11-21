@@ -16,9 +16,8 @@ interface TrackDao {
     suspend fun deleteTrack(track: TrackEntity)
 
     @Query("SELECT * FROM favorite_tracks_table WHERE trackId = :trackId limit 1")
-    suspend fun checkTrackById(trackId: Long): TrackEntity?
+    suspend fun checkTrackById(trackId: Long): TrackEntity
 
     @Query("SELECT * FROM favorite_tracks_table ORDER BY addTime DESC")
     suspend fun getFavoritesTracks(): List<TrackEntity>
-
 }

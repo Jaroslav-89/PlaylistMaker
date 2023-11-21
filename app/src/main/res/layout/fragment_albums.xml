@@ -29,7 +29,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headingTv"
+        app:tabGravity="fill"
         app:tabIndicatorColor="?attr/colorOnPrimary"
+        app:tabMaxWidth="0dp"
         app:tabMode="fixed"
         app:tabTextAppearance="@style/AlbumActivityTabLayout"
         app:tabTextColor="?attr/colorOnPrimary" />

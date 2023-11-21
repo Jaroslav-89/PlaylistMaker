@@ -1,6 +1,6 @@
 package com.jar89.playlistmaker.player.domain.api
 
-import com.jar89.playlistmaker.player.domain.model.PlayerState
+import com.jar89.playlistmaker.player.domain.model.GeneralPlayerState
 
 interface Player {
     fun createPlayer(trackUrl: String?, completion: () -> Unit)
@@ -11,5 +11,5 @@ interface Player {
 
     fun release()
 
-    fun playerState(): PlayerState
+    fun playerState(): GeneralPlayerState
 }

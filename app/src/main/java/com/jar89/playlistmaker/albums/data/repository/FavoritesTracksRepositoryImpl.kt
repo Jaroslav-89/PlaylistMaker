@@ -2,7 +2,7 @@ package com.jar89.playlistmaker.albums.data.repository
 
 import com.jar89.playlistmaker.albums.data.converters.TrackDbConvertor
 import com.jar89.playlistmaker.albums.data.db.AppDatabase
-import com.jar89.playlistmaker.albums.domain.db.FavoritesTracksRepository
+import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksRepository
 import com.jar89.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
