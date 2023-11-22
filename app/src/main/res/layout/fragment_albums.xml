@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
-    tools:context=".albums.ui.fragments.AlbumsFragment">
+    tools:context=".albums.ui.AlbumsFragment">
 
     <TextView
         android:id="@+id/headingTv"

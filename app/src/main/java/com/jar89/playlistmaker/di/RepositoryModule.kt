@@ -38,6 +38,7 @@ val repositoryModule = module {
             dataBase = get(),
             playlistDbConvertor = get(),
             trackDbConvertor = get(),
+            externalNavigator = get(),
             context = androidContext()
         )
     }

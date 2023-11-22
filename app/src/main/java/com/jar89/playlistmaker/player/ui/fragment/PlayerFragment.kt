@@ -17,12 +17,13 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jar89.playlistmaker.R
+import com.jar89.playlistmaker.albums.ui.detail_playlist.fragment.DetailPlaylistFragment
 import com.jar89.playlistmaker.databinding.FragmentPlayerBinding
 import com.jar89.playlistmaker.player.ui.fragment.adapter.BottomSheetPlaylistsAdapter
-import com.jar89.playlistmaker.player.ui.view_model.FavoriteState
-import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
-import com.jar89.playlistmaker.player.ui.view_model.PlaylistsState
+import com.jar89.playlistmaker.player.ui.view_model.state.FavoriteState
+import com.jar89.playlistmaker.player.ui.view_model.state.PlayerState
+import com.jar89.playlistmaker.player.ui.view_model.state.PlaylistsState
 import com.jar89.playlistmaker.search.domain.model.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -104,7 +105,10 @@ class PlayerFragment : Fragment() {
         }
 
         binding.createPlaylistBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_playerFragment_to_createPlaylistFragment)
+            findNavController().navigate(
+                R.id.action_playerFragment_to_createPlaylistFragment,
+                DetailPlaylistFragment.createArgs(0)
+            )
         }
     }
 

@@ -2,7 +2,7 @@ package com.jar89.playlistmaker.player.data
 
 import android.media.MediaPlayer
 import com.jar89.playlistmaker.player.domain.api.Player
-import com.jar89.playlistmaker.player.ui.view_model.PlayerState
+import com.jar89.playlistmaker.player.ui.view_model.state.PlayerState
 
 class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 

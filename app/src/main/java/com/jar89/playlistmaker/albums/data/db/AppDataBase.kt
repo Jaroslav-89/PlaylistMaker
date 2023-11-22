@@ -9,7 +9,7 @@ import com.jar89.playlistmaker.albums.data.db.entity.PlaylistEntity
 import com.jar89.playlistmaker.albums.data.db.entity.PlaylistTrackEntity
 import com.jar89.playlistmaker.albums.data.db.entity.TrackEntity
 
-@Database(version = 3, entities = [TrackEntity::class, PlaylistEntity::class, PlaylistTrackEntity::class], exportSchema = false)
+@Database(version = 4, entities = [TrackEntity::class, PlaylistEntity::class, PlaylistTrackEntity::class], exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun favoritesTracksDao(): TrackDao

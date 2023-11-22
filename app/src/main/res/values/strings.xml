@@ -50,9 +50,19 @@
     <string name="hint_title">Название*</string>
     <string name="hint_description">Описание</string>
     <string name="label_create">Создать</string>
+    <string name="label_save">Сохранить</string>
     <string name="playlist_create">Плейлист %1$s создан</string>
     <string name="finish_creating_dialog_title">Завершить создание плейлиста?</string>
     <string name="finish_creating_dialog_message">Все несохраненные данные будут потеряны</string>
     <string name="finish_creating_dialog_btn_positive">Завершить</string>
     <string name="finish_creating_dialog_btn_negative">Отмена</string>
+    <string name="empty_playlist">В этом плейлисте еще нет треков</string>
+    <string name="share">Поделиться</string>
+    <string name="edit_playlist">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="dialog_btn_positive">Да</string>
+    <string name="dialog_btn_negative">Нет</string>
+    <string name="title_delete_playlist_dialog">Хотите удалить плейлист \"%1$s\"?</string>
+    <string name="delete_track_dialog_title">Хотите удалить трек?</string>
+    <string name="empty_playlist_nothing_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
 </resources>

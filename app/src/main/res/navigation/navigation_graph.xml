@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/albumsFragment"
-        android:name="com.jar89.playlistmaker.albums.ui.fragments.AlbumsFragment"
+        android:name="com.jar89.playlistmaker.albums.ui.AlbumsFragment"
         android:label="fragment_albums"
         tools:layout="@layout/fragment_albums" >
         <action
@@ -24,6 +24,9 @@
         <action
             android:id="@+id/action_albumsFragment_to_createPlaylistFragment"
             app:destination="@id/createPlaylistFragment" />
+        <action
+            android:id="@+id/action_albumsFragment_to_detailPlaylistFragment"
+            app:destination="@id/detailPlaylistFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -41,6 +44,18 @@
     </fragment>
     <fragment
         android:id="@+id/createPlaylistFragment"
-        android:name="com.jar89.playlistmaker.albums.ui.fragments.CreatePlaylistFragment"
+        android:name="com.jar89.playlistmaker.albums.ui.create_playlist.fragment.CreatePlaylistFragment"
         android:label="CreatePlaylistFragment" />
+    <fragment
+        android:id="@+id/detailPlaylistFragment"
+        android:name="com.jar89.playlistmaker.albums.ui.detail_playlist.fragment.DetailPlaylistFragment"
+        android:label="fragment_playlist_detail"
+        tools:layout="@layout/fragment_playlist_detail" >
+        <action
+            android:id="@+id/action_detailPlaylistFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+        <action
+            android:id="@+id/action_detailPlaylistFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+    </fragment>
 </navigation>
