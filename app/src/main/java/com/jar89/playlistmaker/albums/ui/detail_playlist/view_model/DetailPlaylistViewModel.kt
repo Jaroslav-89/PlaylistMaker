@@ -9,6 +9,7 @@ import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.albums.domain.api.PlaylistInteractor
 import com.jar89.playlistmaker.albums.domain.model.Playlist
 import com.jar89.playlistmaker.search.domain.model.Track
+import com.jar89.playlistmaker.util.toTimeFormat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -54,24 +55,23 @@ class DetailPlaylistViewModel(
                 DetailPlaylistState.Message(text = context.getString(R.string.empty_playlist_nothing_to_share))
             return
         }
-        var message = "${playlist.name}\n"
-        message += "${playlist.description}\n"
-        message += "${
-            context.applicationContext.resources.getQuantityString(
-                R.plurals.tracks_number,
-                playlist.numberOfTracks,
-                playlist.numberOfTracks
+
+        val message = buildString {
+            appendLine(context.getString(R.string.playlist, playlist.name))
+            if (!playlist.description.isNullOrEmpty()) {
+                appendLine(playlist.description)
+            }
+            appendLine(
+                context.resources.getQuantityString(
+                    R.plurals.tracks_number,
+                    tracks.size,
+                    tracks.size
+                )
             )
-        }\n"
-
-        for ((index, track) in tracks.withIndex()) {
-            message += "${index + 1}. ${track.artistName} - ${track.trackName} (${
-                (track.trackTimeMillis)?.div(
-                    60000
-                )?.toDouble().toString() + "min"
-            })\n"
+            tracks.forEachIndexed { index, track ->
+                appendLine("${index + 1}. ${track.artistName} - ${track.trackName} (${track.trackTimeMillis?.toTimeFormat()})")
+            }
         }
-
         playlistInteractor.sharePlaylist(message)
     }
 }

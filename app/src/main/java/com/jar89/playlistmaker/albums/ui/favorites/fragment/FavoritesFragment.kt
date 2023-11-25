@@ -46,9 +46,7 @@ class FavoritesFragment : Fragment(), TracksAdapter.TrackClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         binding.favoritesTrackRv.adapter = favoritesTrackAdapter
-
         viewModel.getFavoritesTracks()
-
         viewModel.state.observe(viewLifecycleOwner) {
             renderState(it)
         }
@@ -63,7 +61,6 @@ class FavoritesFragment : Fragment(), TracksAdapter.TrackClickListener {
         super.onDestroyView()
         _binding = null
     }
-
 
     override fun onTrackClick(track: Track) {
         if (clickDebounce()) {
@@ -87,9 +84,7 @@ class FavoritesFragment : Fragment(), TracksAdapter.TrackClickListener {
     }
 
     private fun showFavoritesTracks(favoritesTrack: List<Track>) {
-        favoritesTrackAdapter.tracks.clear()
-        favoritesTrackAdapter.tracks.addAll(favoritesTrack)
-        favoritesTrackAdapter.notifyDataSetChanged()
+        favoritesTrackAdapter.setTracks(favoritesTrack)
         binding.placeHolderGroup.visibility = View.GONE
         binding.favoritesTrackRv.visibility = View.VISIBLE
     }

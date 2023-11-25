@@ -57,9 +57,7 @@ class CreatePlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
-
         setTextWatcher()
-
         binding.playlistPlaceHolder.setOnClickListener {
             imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
@@ -116,13 +114,13 @@ class CreatePlaylistFragment : Fragment() {
     private fun initView() {
         requireArguments().let {
             playlistId = it.getInt(ARGS_PLAYLIST)
-        }
 
-        if (playlistId == 0) {
-            binding.createBtn.text = requireContext().getString(R.string.label_create)
-        } else {
-            viewModel.getPlaylistById(playlistId)
-            binding.createBtn.text = requireContext().getString(R.string.label_save)
+            if (playlistId == 0) {
+                binding.createBtn.text = requireContext().getString(R.string.label_create)
+            } else {
+                viewModel.getPlaylistById(playlistId)
+                binding.createBtn.text = requireContext().getString(R.string.label_save)
+            }
         }
     }
 

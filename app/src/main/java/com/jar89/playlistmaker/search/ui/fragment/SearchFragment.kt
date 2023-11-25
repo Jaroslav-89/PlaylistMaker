@@ -26,7 +26,6 @@ import android.view.ViewGroup as ViewGroup1
 class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
 
     private val searchViewModel: SearchViewModel by viewModel()
-
     private var isClickAllowed = true
     private val trackAdapter = TracksAdapter(this)
     private val searchHistoryAdapter = SearchHistoryAdapter(this)
@@ -53,17 +52,11 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         setKeyboardFocus()
-
         loadSearchHistory()
-
         setTrackAdapter()
-
         setSearchHistoryAdapter()
-
         setTextAndFocusChangedListener()
-
         setClickListeners()
-
         searchViewModel.state.observe(viewLifecycleOwner) {
             renderState(it)
         }
@@ -89,8 +82,7 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
     }
 
     private fun showHistory(tracks: List<Track>) {
-        searchHistoryAdapter.searchHistoryTracks.clear()
-        searchHistoryAdapter.searchHistoryTracks.addAll(tracks)
+        searchHistoryAdapter.setHistoryTracks(tracks)
         binding.placeHolderImage.visibility = View.GONE
         binding.placeHolderText.visibility = View.GONE
         binding.placeHolderRefreshButton.visibility = View.GONE
@@ -98,7 +90,6 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         binding.trackRv.visibility = View.GONE
         if (tracks.isNotEmpty() && binding.searchEt.text.isEmpty()) {
             binding.searchHistoryGroup.visibility = View.VISIBLE
-            searchHistoryAdapter.notifyDataSetChanged()
         }
     }
 
@@ -131,9 +122,7 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         binding.placeHolderRefreshButton.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
         binding.trackRv.visibility = View.VISIBLE
-        trackAdapter.tracks.clear()
-        trackAdapter.tracks.addAll(foundTracks)
-        trackAdapter.notifyDataSetChanged()
+        trackAdapter.setTracks(foundTracks)
     }
 
     private fun showLoading() {
@@ -151,13 +140,11 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
 
     private fun setTrackAdapter() {
         binding.trackRv.adapter = trackAdapter
-        trackAdapter.tracks = ArrayList<Track>()
     }
 
     private fun setSearchHistoryAdapter() {
         binding.searchHistoryRv.adapter = searchHistoryAdapter
         searchViewModel.showHistory()
-        searchHistoryAdapter.searchHistoryTracks = ArrayList<Track>()
     }
 
     private fun setTextAndFocusChangedListener() {
@@ -187,9 +174,10 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
     private fun setKeyboardFocus() {
         val keyboard =
             requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (binding.searchEt.text.isEmpty()) {
+        if (binding.searchEt.text.isBlank()) {
             binding.searchEt.requestFocus()
             keyboard.showSoftInput(binding.searchEt, InputMethodManager.SHOW_IMPLICIT)
+            keyboard.hideSoftInputFromWindow(binding.searchEt.windowToken, 0)
         } else {
             binding.searchEt.clearFocus()
             keyboard.hideSoftInputFromWindow(binding.searchEt.windowToken, 0)
@@ -200,12 +188,9 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         binding.clearTextIv.setOnClickListener {
             binding.searchEt.setText("")
             setKeyboardFocus()
-            trackAdapter.tracks.clear()
-            trackAdapter.notifyDataSetChanged()
             binding.placeHolderImage.visibility = View.GONE
-            if (searchHistoryAdapter.searchHistoryTracks.isNotEmpty()) {
-                binding.searchHistoryGroup.visibility = View.VISIBLE
-            }
+            binding.searchHistoryGroup.visibility = View.VISIBLE
+
         }
 
         binding.searchEt.setOnEditorActionListener { _, actionId, _ ->
@@ -223,7 +208,6 @@ class SearchFragment : Fragment(), TracksAdapter.TrackClickListener {
         binding.searchHistoryClearButton.setOnClickListener {
             searchViewModel.clearHistory()
             binding.searchHistoryGroup.visibility = View.GONE
-            searchHistoryAdapter.notifyDataSetChanged()
         }
     }
 

@@ -9,8 +9,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jar89.playlistmaker.R
 import com.jar89.playlistmaker.databinding.TrackViewItemBinding
 import com.jar89.playlistmaker.search.domain.model.Track
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.jar89.playlistmaker.util.toTimeFormat
 
 class DetailPlaylistAdapter(private val clickListener: TrackClickListener) :
     RecyclerView.Adapter<TracksViewHolder>() {
@@ -19,6 +18,7 @@ class DetailPlaylistAdapter(private val clickListener: TrackClickListener) :
 
     fun setTracks(content: List<Track>) {
         tracks = content
+        this.notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
@@ -53,7 +53,7 @@ class TracksViewHolder(private val binding: TrackViewItemBinding) :
             with(track) {
                 trackNameTv.text = track.trackName
                 artistNameTv.text = track.artistName
-                trackTimeTv.text = longToTime(track.trackTimeMillis)
+                trackTimeTv.text = track.trackTimeMillis?.toTimeFormat()
                 Glide.with(itemView)
                     .load(getCoverArtwork(track.artworkUrl100))
                     .placeholder(R.drawable.ic_place_holder_search_screen)
@@ -66,10 +66,6 @@ class TracksViewHolder(private val binding: TrackViewItemBinding) :
                     .into(albumPicIv)
             }
         }
-    }
-
-    private fun longToTime(trackTime: Long?): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
     }
 
     private fun getCoverArtwork(artworkUrl: String?) =

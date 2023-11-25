@@ -65,4 +65,5 @@
     <string name="title_delete_playlist_dialog">Хотите удалить плейлист \"%1$s\"?</string>
     <string name="delete_track_dialog_title">Хотите удалить трек?</string>
     <string name="empty_playlist_nothing_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="playlist">Плейлист \"%1$s\"</string>
 </resources>

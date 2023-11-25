@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
@@ -26,9 +27,8 @@ import com.jar89.playlistmaker.albums.ui.detail_playlist.view_model.DetailPlayli
 import com.jar89.playlistmaker.databinding.FragmentPlaylistDetailBinding
 import com.jar89.playlistmaker.player.ui.fragment.PlayerFragment
 import com.jar89.playlistmaker.search.domain.model.Track
+import com.jar89.playlistmaker.util.toTimeFormat
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
-import java.util.Locale
 import kotlin.math.abs
 
 class DetailPlaylistFragment : Fragment() {
@@ -36,10 +36,8 @@ class DetailPlaylistFragment : Fragment() {
     private lateinit var binding: FragmentPlaylistDetailBinding
     private lateinit var trackBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var menuBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
-
     private var playlistId: Int = 0
     private var playlistName: String = ""
-
     private val viewModel: DetailPlaylistViewModel by viewModel()
 
     private val adapter = DetailPlaylistAdapter(
@@ -76,20 +74,13 @@ class DetailPlaylistFragment : Fragment() {
         requireArguments().let {
             playlistId = it.getInt(ARGS_PLAYLIST)
         }
-
         viewModel.getPlaylistById(playlistId)
-
         setBottomSheets()
-
         setTracksRv()
-
         setClickListeners()
-
         viewModel.state.observe(viewLifecycleOwner) {
             renderState(it)
         }
-
-
     }
 
     private fun setBottomSheets() {
@@ -98,27 +89,26 @@ class DetailPlaylistFragment : Fragment() {
         }
         menuBottomSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet).apply {
             state = STATE_HIDDEN
-        }
+            addBottomSheetCallback(object :
+                BottomSheetBehavior.BottomSheetCallback() {
 
-        menuBottomSheetBehavior.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        STATE_HIDDEN -> {
+                            binding.overlay.visibility = View.GONE
+                        }
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    STATE_HIDDEN -> {
-                        binding.overlay.visibility = View.GONE
-                    }
-
-                    else -> {
-                        binding.overlay.visibility = View.VISIBLE
+                        else -> {
+                            binding.overlay.visibility = View.VISIBLE
+                        }
                     }
                 }
-            }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                binding.overlay.alpha = 1 - abs(slideOffset)
-            }
-        })
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    binding.overlay.alpha = 1 - abs(slideOffset)
+                }
+            })
+        }
     }
 
     private fun setTracksRv() {
@@ -127,47 +117,48 @@ class DetailPlaylistFragment : Fragment() {
     }
 
     private fun setClickListeners() {
-        binding.backBtn.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        with(binding) {
+            backBtn.setOnClickListener {
+                findNavController().navigateUp()
+            }
 
-        binding.shareBtn.setOnClickListener {
-            menuBottomSheetBehavior.state = STATE_HIDDEN
-            viewModel.sharePlaylist(requireContext())
-        }
+            shareBtn.setOnClickListener {
+                menuBottomSheetBehavior.state = STATE_HIDDEN
+                viewModel.sharePlaylist(requireContext())
+            }
 
-        binding.menuBtn.setOnClickListener {
-            menuBottomSheetBehavior.state = STATE_COLLAPSED
-            binding.menuBottomSheet.visibility = View.VISIBLE
-        }
+            menuBtn.setOnClickListener {
+                menuBottomSheetBehavior.state = STATE_COLLAPSED
+                menuBottomSheet.visibility = View.VISIBLE
+            }
 
-        binding.shareMenuBottomSheetTv.setOnClickListener {
-            menuBottomSheetBehavior.state = STATE_HIDDEN
+            shareMenuBottomSheetTv.setOnClickListener {
+                menuBottomSheetBehavior.state = STATE_HIDDEN
+                viewModel.sharePlaylist(requireContext())
+            }
 
-            viewModel.sharePlaylist(requireContext())
-        }
+            binding.editMenuBottomSheetTv.setOnClickListener {
+                findNavController().navigate(
+                    R.id.action_detailPlaylistFragment_to_createPlaylistFragment,
+                    CreatePlaylistFragment.createArgs(playlistId)
+                )
+            }
 
-        binding.editMenuBottomSheetTv.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_detailPlaylistFragment_to_createPlaylistFragment,
-                CreatePlaylistFragment.createArgs(playlistId)
-            )
-        }
-
-        binding.deleteMenuBottomSheetTv.setOnClickListener {
-            menuBottomSheetBehavior.state = STATE_HIDDEN
-            MaterialAlertDialogBuilder(
-                requireContext(),
-                R.style.MaterialAlertDialog
-            )
-                .setTitle(getString(R.string.title_delete_playlist_dialog, playlistName))
-                .setPositiveButton(getString(R.string.dialog_btn_positive))
-                { _, _ ->
-                    viewModel.deletePlaylist()
-                }
-                .setNegativeButton(getString(R.string.dialog_btn_negative))
-                { _, _ -> }
-                .show()
+            binding.deleteMenuBottomSheetTv.setOnClickListener {
+                menuBottomSheetBehavior.state = STATE_HIDDEN
+                MaterialAlertDialogBuilder(
+                    requireContext(),
+                    R.style.MaterialAlertDialog
+                )
+                    .setTitle(getString(R.string.title_delete_playlist_dialog, playlistName))
+                    .setPositiveButton(getString(R.string.dialog_btn_positive))
+                    { _, _ ->
+                        viewModel.deletePlaylist()
+                    }
+                    .setNegativeButton(getString(R.string.dialog_btn_negative))
+                    { _, _ -> }
+                    .show()
+            }
         }
     }
 
@@ -179,7 +170,7 @@ class DetailPlaylistFragment : Fragment() {
             }
 
             is DetailPlaylistState.Message -> {
-
+                showToast(state.text)
             }
 
             is DetailPlaylistState.PlaylistDeleted -> {
@@ -219,7 +210,7 @@ class DetailPlaylistFragment : Fragment() {
                 totalDurationTv.text = resources.getQuantityString(
                     R.plurals.minutes_number,
                     longToMinInt(playlistDuration),
-                    longToTime(playlistDuration)
+                    playlistDuration.toTimeFormat()
                 )
                 tracksTotalTv.text = resources.getQuantityString(
                     R.plurals.tracks_number,
@@ -242,7 +233,6 @@ class DetailPlaylistFragment : Fragment() {
             binding.tracksRv.visibility = View.GONE
         } else {
             adapter.setTracks(tracks)
-            adapter.notifyDataSetChanged()
             binding.placeholderMessage.visibility = View.GONE
             binding.tracksRv.visibility = View.VISIBLE
         }
@@ -264,12 +254,15 @@ class DetailPlaylistFragment : Fragment() {
             .show()
     }
 
-    private fun longToMinInt(tracksTime: Long): Int {
-        return (tracksTime.toInt() / 60000)
+    private fun showToast(text: String) {
+        Toast.makeText(
+            requireContext(),
+            text, Toast.LENGTH_SHORT
+        ).show()
     }
 
-    private fun longToTime(trackTime: Long?): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
+    private fun longToMinInt(tracksTime: Long): Int {
+        return (tracksTime.toInt() / 60000)
     }
 
     private fun calculatePeekHeight() {
@@ -294,3 +287,4 @@ class DetailPlaylistFragment : Fragment() {
             bundleOf(ARGS_PLAYLIST to playlistId)
     }
 }
+

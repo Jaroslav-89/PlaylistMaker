@@ -36,7 +36,6 @@ class PlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setPlaylistRv()
-
         binding.createNewPlaylistBtn.setOnClickListener {
             findNavController().navigate(
                 R.id.action_albumsFragment_to_createPlaylistFragment,
@@ -47,8 +46,6 @@ class PlaylistFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner) {
             renderState(it)
         }
-
-
     }
 
     override fun onResume() {
@@ -68,7 +65,6 @@ class PlaylistFragment : Fragment() {
                 DetailPlaylistFragment.createArgs(playlist.id)
             )
         }
-
         binding.rvPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvPlaylists.adapter = adapter
     }
@@ -82,14 +78,12 @@ class PlaylistFragment : Fragment() {
 
     private fun showEmpty() {
         adapter.setPlaylists(emptyList())
-        adapter.notifyDataSetChanged()
         binding.rvPlaylists.visibility = View.GONE
         binding.playlistsIsEmpty.visibility = View.VISIBLE
     }
 
     private fun showContent(playlists: List<Playlist>) {
         adapter.setPlaylists(playlists)
-        adapter.notifyDataSetChanged()
         binding.playlistsIsEmpty.visibility = View.GONE
         binding.rvPlaylists.visibility = View.VISIBLE
     }
