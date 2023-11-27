@@ -25,7 +25,7 @@ class CreatePlaylistViewModel(private val playlistInteractor: PlaylistInteractor
                         id = playlist?.id ?: 0,
                         name = name,
                         description = description,
-                        coverUri = coverUri,
+                        coverUri = coverUri ?: playlist?.coverUri,
                         tracksId = playlist?.tracksId ?: emptyList(),
                         playlistDuration = playlist?.playlistDuration ?: 0
                     )
