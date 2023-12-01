@@ -48,6 +48,22 @@ class TrackDbConvertor {
             track.primaryGenreName,
             track.country,
             track.previewUrl,
+            addTime = System.currentTimeMillis()
+        )
+    }
+
+    fun mapPlaylistTrackEntityToTrack(trackEntity: PlaylistTrackEntity): Track {
+        return Track(
+            trackEntity.trackId.toLong(),
+            trackEntity.trackName,
+            trackEntity.artistName,
+            trackEntity.trackTimeMillis,
+            trackEntity.artworkUrl100,
+            trackEntity.collectionName,
+            trackEntity.releaseDate,
+            trackEntity.primaryGenreName,
+            trackEntity.country,
+            trackEntity.previewUrl,
         )
     }
 }

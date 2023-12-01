@@ -1,8 +1,9 @@
 package com.jar89.playlistmaker.di
 
-import com.jar89.playlistmaker.albums.ui.view_model.CreatePlaylistViewModel
-import com.jar89.playlistmaker.albums.ui.view_model.FavoritesViewModel
-import com.jar89.playlistmaker.albums.ui.view_model.PlaylistViewModel
+import com.jar89.playlistmaker.albums.ui.create_playlist.view_model.CreatePlaylistViewModel
+import com.jar89.playlistmaker.albums.ui.detail_playlist.view_model.DetailPlaylistViewModel
+import com.jar89.playlistmaker.albums.ui.favorites.view_model.FavoritesViewModel
+import com.jar89.playlistmaker.albums.ui.playlist.view_model.PlaylistViewModel
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.jar89.playlistmaker.search.domain.model.Track
 import com.jar89.playlistmaker.search.ui.view_model.SearchViewModel
@@ -38,4 +39,6 @@ val viewModelModule = module {
     viewModel { PlaylistViewModel(playlistInteractor = get()) }
 
     viewModel { CreatePlaylistViewModel(playlistInteractor = get()) }
+
+    viewModel { DetailPlaylistViewModel(playlistInteractor = get()) }
 }

@@ -27,17 +27,12 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkTheme()
-
         observeThemeSwitcherState()
-
         binding.themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.updateThemeSettings(isChecked)
         }
-
         binding.settingsShareBtn.setOnClickListener { settingsViewModel.shareApp() }
-
         binding.settingsSupportBtn.setOnClickListener { settingsViewModel.contactSupport() }
-
         binding.settingsUserAgreementBtn.setOnClickListener { settingsViewModel.openTerms() }
     }
 

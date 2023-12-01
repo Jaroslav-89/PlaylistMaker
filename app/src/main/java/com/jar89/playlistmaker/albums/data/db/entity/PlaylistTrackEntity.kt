@@ -16,5 +16,6 @@ data class PlaylistTrackEntity (
     val primaryGenreName: String?,
     val country: String?,
     val previewUrl: String?,
-    val usedInPlaylists: Int = 0
+    val usedInPlaylists: Int = 0,
+    val addTime: Long
 )

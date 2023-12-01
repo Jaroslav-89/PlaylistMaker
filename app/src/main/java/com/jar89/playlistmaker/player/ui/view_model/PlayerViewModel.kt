@@ -8,6 +8,9 @@ import com.jar89.playlistmaker.albums.domain.api.FavoritesTracksInteractor
 import com.jar89.playlistmaker.albums.domain.api.PlaylistInteractor
 import com.jar89.playlistmaker.albums.domain.model.Playlist
 import com.jar89.playlistmaker.player.domain.api.PlayerInteractor
+import com.jar89.playlistmaker.player.ui.view_model.state.FavoriteState
+import com.jar89.playlistmaker.player.ui.view_model.state.PlayerState
+import com.jar89.playlistmaker.player.ui.view_model.state.PlaylistsState
 import com.jar89.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

@@ -26,7 +26,7 @@ class PlaylistDbConvertor {
         }
     }
 
-    private fun mapEntityToPlaylist(playlistEntity: PlaylistEntity): Playlist {
+    fun mapEntityToPlaylist(playlistEntity: PlaylistEntity): Playlist {
         return with(playlistEntity) {
             Playlist(
                 id = id,
@@ -40,7 +40,7 @@ class PlaylistDbConvertor {
         }
     }
 
-    private fun mapStringToListInt(tracksId: String): List<Int> {
+    fun mapStringToListInt(tracksId: String): List<Int> {
         return if (tracksId.isEmpty()) {
             emptyList()
         } else {

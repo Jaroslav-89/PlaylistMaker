@@ -18,6 +18,7 @@ class BottomSheetPlaylistsAdapter(
 
     fun setPlaylists(content: List<Playlist>) {
         playlists = content
+        this.notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(

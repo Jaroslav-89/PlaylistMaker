@@ -17,17 +17,17 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jar89.playlistmaker.R
+import com.jar89.playlistmaker.albums.ui.detail_playlist.fragment.DetailPlaylistFragment
 import com.jar89.playlistmaker.databinding.FragmentPlayerBinding
 import com.jar89.playlistmaker.player.ui.fragment.adapter.BottomSheetPlaylistsAdapter
-import com.jar89.playlistmaker.player.ui.view_model.FavoriteState
-import com.jar89.playlistmaker.player.ui.view_model.PlayerState
 import com.jar89.playlistmaker.player.ui.view_model.PlayerViewModel
-import com.jar89.playlistmaker.player.ui.view_model.PlaylistsState
+import com.jar89.playlistmaker.player.ui.view_model.state.FavoriteState
+import com.jar89.playlistmaker.player.ui.view_model.state.PlayerState
+import com.jar89.playlistmaker.player.ui.view_model.state.PlaylistsState
 import com.jar89.playlistmaker.search.domain.model.Track
+import com.jar89.playlistmaker.util.toTimeFormat
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import java.text.SimpleDateFormat
-import java.util.Locale
 import kotlin.math.abs
 
 class PlayerFragment : Fragment() {
@@ -56,25 +56,17 @@ class PlayerFragment : Fragment() {
         requireArguments().let {
             track = it.getParcelable(ARGS_TRACK)!!
         }
-
         setPlaylistsRv()
-
         setBottomSheet()
-
         checkFavoriteBtn()
-
         setTrackInfoAndAlbumImg(track)
-
         setClickListeners()
-
         playerViewModel.playerState.observe(viewLifecycleOwner) {
             renderPlayerState(it)
         }
-
         playerViewModel.isFavorite.observe(viewLifecycleOwner) {
             renderFavoriteState(it)
         }
-
         playerViewModel.playlistsState.observe(viewLifecycleOwner) {
             renderPlaylistsState(it)
         }
@@ -104,7 +96,10 @@ class PlayerFragment : Fragment() {
         }
 
         binding.createPlaylistBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_playerFragment_to_createPlaylistFragment)
+            findNavController().navigate(
+                R.id.action_playerFragment_to_createPlaylistFragment,
+                DetailPlaylistFragment.createArgs(0)
+            )
         }
     }
 
@@ -112,7 +107,6 @@ class PlayerFragment : Fragment() {
         adapter = BottomSheetPlaylistsAdapter { playlist ->
             playerViewModel.addTrackToPlaylist(playlist)
         }
-
         binding.playlistsRv.layoutManager = LinearLayoutManager(requireContext())
         binding.playlistsRv.adapter = adapter
     }
@@ -154,7 +148,7 @@ class PlayerFragment : Fragment() {
                     trackNameTv.setTextOrHide(trackName, trackNameTv)
                     artistNameTv.setTextOrHide(artistName, artistNameTv)
                     durationDescriptionTv.setTextOrHide(
-                        longToTime(trackTimeMillis),
+                        trackTimeMillis?.toTimeFormat(),
                         durationHeadingTv
                     )
                     albumDescriptionTv.setTextOrHide(collectionName, albumHeadingTv)
@@ -192,12 +186,10 @@ class PlayerFragment : Fragment() {
         } else {
             showPauseBtn()
         }
-
         if (!state.isPlayButtonEnabled) {
             showNotReady()
         }
-
-        binding.progressTimeTv.text = getCurrentPosition(state.progress)
+        binding.progressTimeTv.text = state.progress.toLong().toTimeFormat()
     }
 
     private fun renderFavoriteState(state: FavoriteState) {
@@ -230,7 +222,6 @@ class PlayerFragment : Fragment() {
             is PlaylistsState.WasAdded -> showTrackAdded(state.playlistName)
             is PlaylistsState.ShowPlaylists -> {
                 adapter.setPlaylists(state.playlists)
-                adapter.notifyDataSetChanged()
             }
         }
     }
@@ -273,13 +264,6 @@ class PlayerFragment : Fragment() {
 
     private fun getYear(date: String?) =
         date?.substringBefore('-')
-
-    private fun longToTime(trackTime: Long?): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTime)
-    }
-
-    private fun getCurrentPosition(time: Int) =
-        android.icu.text.SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
 
     companion object {
         const val ARGS_TRACK = "track"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".albums.ui.fragments.CreatePlaylistFragment">
+    tools:context=".albums.ui.create_playlist.fragment.CreatePlaylistFragment">
 
     <ImageView
         android:id="@+id/backBtn"
@@ -111,7 +111,6 @@
         android:background="@drawable/bg_create_playlist_btn"
         android:enabled="false"
         android:fontFamily="@font/ys_display_medium"
-        android:text="@string/label_create"
         android:textAllCaps="false"
         android:textColor="@color/simple_white"
         android:textSize="16sp"
