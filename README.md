@@ -9,6 +9,7 @@
 - Koin
 - ViewBinding
 - RecyclerView
+- Glide
 - ViewPager
 - SharedPreferences
 - Clean Architecture (MVVM)
