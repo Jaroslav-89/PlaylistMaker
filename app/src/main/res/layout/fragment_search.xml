@@ -64,7 +64,8 @@
             android:background="?attr/colorPrimaryVariant"
             android:src="@drawable/ic_clear_search_screen"
             android:visibility="gone"
-            app:tint="?attr/hintTextColor" />
+            app:tint="?attr/hintTextColor"
+            tools:visibility="visible"/>
 
     </FrameLayout>
 
