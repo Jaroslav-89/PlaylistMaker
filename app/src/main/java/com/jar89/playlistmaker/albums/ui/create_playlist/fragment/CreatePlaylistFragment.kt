@@ -13,6 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -182,10 +183,63 @@ class CreatePlaylistFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-                binding.createBtn.isEnabled = !s.isNullOrBlank()
+                setBoxStrokeColor()
             }
         }
         binding.playlistTitleEt.addTextChangedListener(textWatcher)
+        binding.playlistDescriptionEt.addTextChangedListener(textWatcher)
+    }
+
+    private fun setBoxStrokeColor() {
+        if (binding.playlistTitleEt.text.isNullOrBlank()) {
+            binding.createBtn.isEnabled = false
+            binding.titleIl.setBoxStrokeColorStateList(
+                AppCompatResources.getColorStateList(
+                    requireContext(),
+                    R.color.edit_text_color_selector
+                )
+            )
+            binding.titleIl.defaultHintTextColor = AppCompatResources.getColorStateList(
+                requireContext(),
+                R.color.edit_text_color_selector
+            )
+        } else {
+            binding.createBtn.isEnabled = true
+            binding.titleIl.setBoxStrokeColorStateList(
+                AppCompatResources.getColorStateList(
+                    requireContext(),
+                    R.color.edit_text_color_selector_blue
+                )
+            )
+            binding.titleIl.defaultHintTextColor = AppCompatResources.getColorStateList(
+                requireContext(),
+                R.color.edit_text_color_selector_blue
+            )
+        }
+
+        if (binding.playlistDescriptionEt.text.isNullOrBlank()) {
+            binding.descriptionIl.setBoxStrokeColorStateList(
+                AppCompatResources.getColorStateList(
+                    requireContext(),
+                    R.color.edit_text_color_selector
+                )
+            )
+            binding.descriptionIl.defaultHintTextColor = AppCompatResources.getColorStateList(
+                requireContext(),
+                R.color.edit_text_color_selector
+            )
+        } else {
+            binding.descriptionIl.setBoxStrokeColorStateList(
+                AppCompatResources.getColorStateList(
+                    requireContext(),
+                    R.color.edit_text_color_selector_blue
+                )
+            )
+            binding.descriptionIl.defaultHintTextColor = AppCompatResources.getColorStateList(
+                requireContext(),
+                R.color.edit_text_color_selector_blue
+            )
+        }
     }
 
     private fun setImageToPlaceHolder(uri: Uri) {

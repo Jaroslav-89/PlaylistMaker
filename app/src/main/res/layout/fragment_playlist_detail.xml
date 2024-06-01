@@ -26,13 +26,14 @@
             android:id="@+id/playlistTitleTv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginTop="24dp"
             android:ellipsize="end"
             android:fontFamily="@font/ys_display_bold"
             android:maxLines="1"
             android:textColor="@color/simple_black"
             android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/placeHolderPlaylistDetail"
             tools:text="Best Songs 2021" />
@@ -125,7 +126,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/dark_screen_bottom_sheet"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/tracksBottomSheet"

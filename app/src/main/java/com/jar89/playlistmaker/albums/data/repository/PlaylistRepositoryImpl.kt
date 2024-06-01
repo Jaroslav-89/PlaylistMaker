@@ -155,7 +155,8 @@ class PlaylistRepositoryImpl(
             if (!filePath.exists()) {
                 filePath.mkdirs()
             }
-            val file = File(filePath, "${playlist.name}.jpg")
+            val randomInt = (0..1000).random()
+            val file = File(filePath, "${playlist.name}${randomInt}.jpg")
             val inputStream = context.contentResolver.openInputStream(playlist.coverUri)
             val outputStream = FileOutputStream(file)
             BitmapFactory
