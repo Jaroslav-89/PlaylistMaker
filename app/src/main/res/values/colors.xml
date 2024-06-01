@@ -10,4 +10,9 @@
     <color name="thumb_light">#AEAFB4</color>
     <color name="track_light">#E6E8EB</color>
     <color name="search_throwable_day_night">#1A1B22</color>
+    <color name="bottom_navigation_view">#FFFFFF</color>
+    <color name="bottom_divider">#E6E8EB</color>
+    <color name="bottom_navigation_ic_color">#1A1B22</color>
+    <color name="dark_screen_bottom_sheet">#99000000</color>
+    <color name="bottom_sheet_swiper">#E6E8EB</color>
 </resources>
