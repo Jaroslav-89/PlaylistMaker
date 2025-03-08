@@ -185,7 +185,7 @@
         app:behavior_hideable="true"
         app:behavior_peekHeight="320dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <ImageView
             android:layout_width="wrap_content"
